@@ -4,15 +4,16 @@ import java.util.*;
 
 public class SudokuSolver {
 
-    private static final int MAX_ITERATIONS = 100000;
+    private static final int MAX_ITERATIONS = 10000;
+
     private final Sudoku sudoku;
+    private final List<List<Integer>> sudokuScheme;
 
-    private int size;
+    private final int[] possibleNumbers;
+    private final int size;
+
     private final Map<Coordinate, Set<Integer>> emptySquares = new HashMap<>();
-    private List<List<Integer>> sudokuScheme;
-    private int[] possibleNumbers;
-
-    private Map<Coordinate, Set<Coordinate>> coordinatesSquares = new HashMap<>();
+    private final Map<Coordinate, Set<Coordinate>> coordinatesSquares = new HashMap<>();
 
     public SudokuSolver(Sudoku sudoku){
         this.sudoku = sudoku;
@@ -98,14 +99,17 @@ public class SudokuSolver {
         int raw = coordinate.getRaw();
         int col = coordinate.getColumn();
 
-        List<Integer> possibleNumbers;
+        Set<Integer> possibleNumbers = emptySquares.get(coordinate);
 
         List<Integer> rawMissingNumbers = analyzeRow(sudokuScheme.get(raw));
+        if (!possibleNumbers.isEmpty())
+            possibleNumbers.removeIf(n -> !rawMissingNumbers.contains(n));
+
         if (rawMissingNumbers.size() == 1){
             sudokuScheme.get(raw).set(col, rawMissingNumbers.get(0));
             return;
         } else {
-            possibleNumbers = new ArrayList<>(rawMissingNumbers);
+            possibleNumbers.addAll(rawMissingNumbers);
         }
 
         List<Integer> colMissingNumbers = analyzeColumn(sudokuScheme, col);

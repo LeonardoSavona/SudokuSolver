@@ -22,7 +22,7 @@ public class Launcher {
         System.out.println("Result: \n"+solvedSudoku);
         System.out.println("Solution: \n"+sudokuSolution);
         if (solvedSudoku.equals(sudokuSolution)) {
-            System.out.println("Suduko solved successfully in "+time+"ms !");
+            System.out.println("Sudoko solved successfully in "+time+"ms !");
         } else {
             System.out.println("Failed to solve sudoku");
         }
