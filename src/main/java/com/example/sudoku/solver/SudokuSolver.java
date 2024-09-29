@@ -5,6 +5,7 @@ import java.util.*;
 public class SudokuSolver {
 
     private static final int MAX_ITERATIONS = 100000;
+    private final Sudoku sudoku;
 
     private int size;
     private final Map<Coordinate, Set<Integer>> emptySquares = new HashMap<>();
@@ -13,7 +14,8 @@ public class SudokuSolver {
 
     private Map<Coordinate, Set<Coordinate>> coordinatesSquares = new HashMap<>();
 
-    public Sudoku solve(Sudoku sudoku) {
+    public SudokuSolver(Sudoku sudoku){
+        this.sudoku = sudoku;
         size = sudoku.getSize();
         sudokuScheme = sudoku.getSudoku();
 
@@ -23,7 +25,9 @@ public class SudokuSolver {
         }
 
         createCoordinatesSquares();
+    }
 
+    public Sudoku solve() {
         int iterations = 0;
         boolean solved = false;
         while (!solved && iterations < MAX_ITERATIONS) {
