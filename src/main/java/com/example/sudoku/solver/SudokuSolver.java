@@ -12,127 +12,88 @@ public class SudokuSolver {
     private final int[] possibleNumbers;
     private final int size;
 
-    private final Map<Coordinate, Set<Integer>> emptySquares = new HashMap<>();
-    private final Map<Coordinate, Set<Coordinate>> coordinatesSquares = new HashMap<>();
+    private final Map<Coordinate, Set<Integer>> emptyCells = new HashMap<>();
+    private final Map<Coordinate, Set<Coordinate>> coordinatesSquares;
 
     public SudokuSolver(Sudoku sudoku){
         this.sudoku = sudoku;
-        size = sudoku.getSize();
-        sudokuScheme = sudoku.getSudoku();
+        this.size = sudoku.getSize();
+        this.sudokuScheme = sudoku.getSudoku();
 
-        possibleNumbers = new int[size];
+        this.possibleNumbers = new int[size];
         for (int i = 0; i < size; i++) {
             possibleNumbers[i] = i+1;
         }
 
-        createCoordinatesSquares();
+        coordinatesSquares = Helper.getCoordinatesSquare(size);
     }
 
     public Sudoku solve() {
         int iterations = 0;
         boolean solved = false;
         while (!solved && iterations < MAX_ITERATIONS) {
-            for (int r = 0; r < size; r++) {
-                for (int c = 0; c < size; c++) {
-                    if (sudokuScheme.get(r).get(c) == 0) {
-                        Coordinate coordinate = new Coordinate(r, c);
-                        emptySquares.putIfAbsent(coordinate, new HashSet<>());
-
-                        addPossibleNumberForSquare(coordinate);
-                    }
-                }
-            }
-
+            iterateOverCells();
             solved = isSolved(sudoku.getSudoku());
             iterations++;
 
-            if (!solved)
-                System.out.println("Solution after "+iterations+" iterations: \n"+sudoku.toString());
+            if (!solved && (iterations < 10 || iterations % 100 == 0))
+                System.out.println("Solution after "+iterations+" iterations: \n"+ sudoku);
         }
 
-        System.out.println("Solved after "+iterations+" iterations");
+        if (solved)
+            System.out.println("Solved after "+iterations+" iterations");
 
         return sudoku;
     }
 
-    private void createCoordinatesSquares() {
-        int sq = (int) Math.sqrt(size);
+    private void iterateOverCells() {
+        for (int r = 0; r < size; r++) {
+            for (int c = 0; c < size; c++) {
+                if (sudokuScheme.get(r).get(c) == 0) {
+                    Coordinate coordinate = new Coordinate(r, c);
+                    emptyCells.putIfAbsent(coordinate, new HashSet<>());
 
-        for (int r = 0; r < size; r += sq) {
-            for (int c = 0; c < size; c += sq) {
-                Coordinate coordinate = new Coordinate(r,c);
-                Set<Coordinate> otherCoordinates = getOtherCoordinates(coordinate, sq);
-
-                coordinatesSquares.put(coordinate, otherCoordinates);
+                    searchNumberForCell(coordinate);
+                }
             }
         }
-
-        Map<Coordinate, Set<Coordinate>> toAdd = new HashMap<>();
-        for (Map.Entry<Coordinate, Set<Coordinate>> entry : coordinatesSquares.entrySet()) {
-            for (Coordinate coordinate : entry.getValue()) {
-
-                Set<Coordinate> coordinatesToAdd = new HashSet<>(entry.getValue());
-                coordinatesToAdd.add(entry.getKey());
-                coordinatesToAdd.remove(coordinate);
-                toAdd.put(coordinate, coordinatesToAdd);
-            }
-        }
-
-        coordinatesSquares.putAll(toAdd);
     }
 
-    private Set<Coordinate> getOtherCoordinates(Coordinate coordinate, int sq) {
+    private void searchNumberForCell(Coordinate coordinate) {
         int raw = coordinate.getRaw();
         int col = coordinate.getColumn();
 
-        Set<Coordinate> result = new HashSet<>();
-        for (int r = raw; r < raw + sq; r++){
-            for (int c = col; c < col + sq; c++) {
-                result.add(new Coordinate(r, c));
-            }
-        }
-
-        return result;
-    }
-
-    private void addPossibleNumberForSquare(Coordinate coordinate) {
-        int raw = coordinate.getRaw();
-        int col = coordinate.getColumn();
-
-        Set<Integer> possibleNumbers = emptySquares.get(coordinate);
+        Set<Integer> possibleNumbers = emptyCells.get(coordinate);
 
         List<Integer> rawMissingNumbers = analyzeRow(sudokuScheme.get(raw));
-        if (!possibleNumbers.isEmpty())
+        if (!possibleNumbers.isEmpty()) {
             possibleNumbers.removeIf(n -> !rawMissingNumbers.contains(n));
-
-        if (rawMissingNumbers.size() == 1){
-            sudokuScheme.get(raw).set(col, rawMissingNumbers.get(0));
-            return;
         } else {
             possibleNumbers.addAll(rawMissingNumbers);
         }
+        if (isNumberFound(possibleNumbers, coordinate)) return;
 
         List<Integer> colMissingNumbers = analyzeColumn(sudokuScheme, col);
-        colMissingNumbers.removeIf(n -> !rawMissingNumbers.contains(n));
-
-        if (colMissingNumbers.size() == 1) {
-            sudokuScheme.get(raw).set(col, colMissingNumbers.get(0));
-            return;
-        } else {
-            possibleNumbers.addAll(colMissingNumbers);
-        }
+        possibleNumbers.removeIf(n -> !colMissingNumbers.contains(n));
+        if (isNumberFound(possibleNumbers, coordinate)) return;
 
         List<Integer> squareMissingNumbers = analyzeSquare(raw, col);
-        squareMissingNumbers.removeIf(n -> !colMissingNumbers.contains(n));
+        possibleNumbers.removeIf(n -> !squareMissingNumbers.contains(n));
+        if (isNumberFound(possibleNumbers, coordinate)) return;
 
-        if (squareMissingNumbers.size() == 1) {
-            sudokuScheme.get(raw).set(col, squareMissingNumbers.get(0));
-            return;
-        } else {
-            possibleNumbers.addAll(squareMissingNumbers);
+        emptyCells.get(coordinate).addAll(possibleNumbers);
+    }
+
+    private boolean isNumberFound(Set<Integer> possibleNumbers, Coordinate coordinate) {
+        int raw = coordinate.getRaw();
+        int col = coordinate.getColumn();
+
+        if (possibleNumbers.size() == 1) {
+            emptyCells.remove(coordinate);
+            sudokuScheme.get(raw).set(col, (Integer) possibleNumbers.toArray()[0]);
+            return true;
         }
-
-        emptySquares.get(coordinate).addAll(possibleNumbers);
+        return false;
     }
 
     private List<Integer> analyzeSquare(int raw, int col) {

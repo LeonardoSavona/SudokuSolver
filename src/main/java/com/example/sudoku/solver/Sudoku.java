@@ -1,6 +1,7 @@
 package com.example.sudoku.solver;
 
 import java.io.*;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -47,14 +48,7 @@ public class Sudoku {
 
     @Override
     public String toString() {
-        StringBuilder result = new StringBuilder();
-        for (List<Integer> row : sudoku) {
-            for (Integer num : row) {
-                result.append(num).append(" ");
-            }
-            result.append("\n");
-        }
-        return result.toString();
+        return ConsolePrinter.getSudokuAsStandardString(this);
     }
 
     @Override

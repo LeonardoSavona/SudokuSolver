@@ -4,9 +4,11 @@ import java.io.File;
 
 public class Launcher {
 
+    private static final String LEVEL = "expert";
+
     public static void main(String[] args) throws Exception {
-        File sudokuFile = new File(Launcher.class.getClassLoader().getResource("sudoku/sudoku_medium").toURI());
-        File sudokuSolutionFile = new File(Launcher.class.getClassLoader().getResource("solutions/sudoku_medium").toURI());
+        File sudokuFile = new File(Launcher.class.getClassLoader().getResource("sudoku/sudoku_"+LEVEL).toURI());
+        File sudokuSolutionFile = new File(Launcher.class.getClassLoader().getResource("solutions/sudoku_"+LEVEL).toURI());
 
         System.out.println("Loading sudoku..");
         Sudoku sudoku = new Sudoku(sudokuFile);
