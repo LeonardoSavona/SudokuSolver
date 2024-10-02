@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 
 public class SudokuSolver {
 
-    private static final int MAX_ITERATIONS = 10000;
+    private static final int MAX_ITERATIONS = 100;
 
     private final Sudoku sudoku;
     private final List<Cell> sudokuScheme;
@@ -32,11 +32,12 @@ public class SudokuSolver {
         int iterations = 0;
         boolean solved = false;
         while (!solved && iterations < MAX_ITERATIONS) {
-            iterateOverCells(iterations);
+            iterateOverCells();
             solved = isSolved(sudoku.getSudoku());
             iterations++;
 
-            if (!solved && (iterations < 10 || iterations % 100 == 0))
+            if (iterations < 10 || iterations % 10 == 0)
+                JSONHelper.addSudoku(sudoku);
                 System.out.println("Solution after "+iterations+" iterations: \n"+ ConsolePrinter.getSudokuAsString(sudoku));
         }
 
@@ -46,7 +47,7 @@ public class SudokuSolver {
         return sudoku;
     }
 
-    private void iterateOverCells(int iterations) {
+    private void iterateOverCells() {
         for (Cell cell : sudokuScheme) {
             if (cell.getValue() == 0) {
                 searchNumberForCell(cell);
@@ -57,6 +58,7 @@ public class SudokuSolver {
     private void searchNumberForCell(Cell cell) {
         if (cell.getPossibleValues().size() == 1) {
             cell.setValue(cell.getPossibleValues().stream().findFirst().get());
+            cell.clearPossibleValues();
             return;
         }
 
@@ -97,6 +99,7 @@ public class SudokuSolver {
         sudokuScheme.forEach(c -> {
             if (c.getCoordinate().getRow() == cell.getCoordinate().getRow() && !c.getPossibleValues().isEmpty()){
                 c.removePossibleValue(cell.getValue());
+                isNumberFound(c);
             }
         });
     }
@@ -105,6 +108,7 @@ public class SudokuSolver {
         sudokuScheme.forEach(c -> {
             if (c.getCoordinate().getColumn() == cell.getCoordinate().getColumn() && !c.getPossibleValues().isEmpty()){
                 c.removePossibleValue(cell.getValue());
+                isNumberFound(c);
             }
         });
     }
@@ -115,6 +119,7 @@ public class SudokuSolver {
             Cell cell1 = sudoku.getCellByCoordinate(coordinate);
             if (!cell1.getPossibleValues().isEmpty()) {
                 cell1.removePossibleValue(cell.getValue());
+                isNumberFound(cell1);
             }
         }
     }
