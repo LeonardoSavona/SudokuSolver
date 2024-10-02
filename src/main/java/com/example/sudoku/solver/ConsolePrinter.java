@@ -1,8 +1,5 @@
 package com.example.sudoku.solver;
 
-import java.util.List;
-import java.util.Map;
-
 public class ConsolePrinter {
 
     public static String getSudokuAsStandardString(Sudoku sudoku) {
@@ -49,7 +46,7 @@ public class ConsolePrinter {
             case 0:
                 return "\u001B[30m";
             case 1:
-                return "\u001B[31m";
+                return "\u001B[38m";
             case 2:
                 return "\u001B[32m";
             case 3:
@@ -63,7 +60,7 @@ public class ConsolePrinter {
             case 7:
                 return "\u001B[37m";
             case 8:
-                return "\u001B[38m";
+                return "\u001B[31m";
             default:
                 return "\u001B[0m";
         }

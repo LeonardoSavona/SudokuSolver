@@ -4,7 +4,7 @@ import java.io.File;
 
 public class Launcher {
 
-    private static final String LEVEL = "hard";
+    private static final String LEVEL = "expert";
 
     public static void main(String[] args) throws Exception {
         File sudokuFile = new File(Launcher.class.getClassLoader().getResource("sudoku/sudoku_"+LEVEL).toURI());
@@ -21,8 +21,8 @@ public class Launcher {
         Sudoku solvedSudoku = sudokuSolver.solve();
         double time = (System.currentTimeMillis()-start);
 
-        System.out.println("Result: \n"+solvedSudoku);
-        System.out.println("Solution: \n"+sudokuSolution);
+        System.out.println("Result: \n"+ConsolePrinter.getSudokuAsString(solvedSudoku));
+        System.out.println("Solution: \n"+ConsolePrinter.getSudokuAsString(sudokuSolution));
         if (solvedSudoku.equals(sudokuSolution)) {
             System.out.println("Sudoko solved successfully in "+time+"ms !");
         } else {
