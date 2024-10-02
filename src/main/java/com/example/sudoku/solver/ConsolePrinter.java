@@ -1,17 +1,14 @@
 package com.example.sudoku.solver;
 
 import java.util.List;
-import java.util.Map;
 
 public class ConsolePrinter {
 
     public static String getSudokuAsStandardString(Sudoku sudoku) {
         StringBuilder result = new StringBuilder();
-        for (int r = 0; r < sudoku.getSize(); r++){
-            for (int c = 0; c < sudoku.getSize(); c++) {
-                result.append(
-                        sudoku.getSudoku().get(new Coordinate(r,c))
-                ).append(" ");
+        for (List<Integer> row : sudoku.getSudoku()) {
+            for (Integer num : row) {
+                result.append(num).append(" ");
             }
             result.append("\n");
         }
@@ -20,24 +17,22 @@ public class ConsolePrinter {
 
     public static String getSudokuAsString(Sudoku sudoku) {
         StringBuilder result = new StringBuilder();
-        int i = 0;
-
-        for (int r = 0; r < sudoku.getSize(); r++) {
+        for (List<Integer> row : sudoku.getSudoku()) {
             result.append(getColor(-1))
                     .append("+")
-                    .append(new String(new char[sudoku.getSize()]).replace("\0", "-----+"))
+                    .append(new String(new char[row.size()]).replace("\0", "-----+"))
                     .append("\n");
-            for (int c = 0; c < sudoku.getSize(); c++) {
+
+            for (Integer num : row) {
                 result.append("|")
-                        .append(getColor(sudoku.getSudoku().get(new Coordinate(r,c))))
-                        .append(String.format("  %d  ", sudoku.getSudoku().get(new Coordinate(r,c))))
+                        .append(getColor(num))
+                        .append(String.format("  %d  ", num))
                         .append(getColor(-1));
             }
             result.append("|\n");
         }
-
         result.append("+")
-                .append(new String(new char[sudoku.getSize()]).replace("\0", "-----+"));
+                .append(new String(new char[sudoku.getSudoku().get(0).size()]).replace("\0", "-----+"));
         return result.toString();
     }
 

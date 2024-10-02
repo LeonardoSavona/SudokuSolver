@@ -1,19 +1,22 @@
 package com.example.sudoku.solver;
 
 import java.io.*;
-import java.util.*;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class Sudoku {
 
-    private Map<Coordinate, Integer> sudoku = new HashMap<>();
-    private int size;
+    private List<List<Integer>> sudoku = new ArrayList<>();
 
     public Sudoku(File sudokuFile) throws Exception {
         loadSudoku(sudokuFile);
     }
 
-    public Sudoku(Map<Coordinate, Integer> sudoku) {
+    public Sudoku(List<List<Integer>> sudoku) {
         this.sudoku = sudoku;
     }
 
@@ -21,21 +24,14 @@ public class Sudoku {
         try (FileReader fileReader = new FileReader(sudokuFile);
              BufferedReader bufferedReader = new BufferedReader(fileReader)) {
 
-            List<List<Integer>> tempSudoku = new ArrayList<>();
             String line = bufferedReader.readLine();
             while (line != null) {
                 List<Integer> row = Arrays.stream(line.split(" "))
                         .map(Integer::new)
                         .collect(Collectors.toList());
 
-                tempSudoku.add(row);
+                sudoku.add(row);
                 line = bufferedReader.readLine();
-            }
-            this.size = tempSudoku.size();
-            for (int r = 0; r < getSize(); r++) {
-                for (int c = 0; c < getSize(); c++) {
-                    sudoku.put(new Coordinate(r, c), tempSudoku.get(r).get(c));
-                }
             }
         } catch (IOException e) {
             throw new Exception(e);
@@ -43,10 +39,10 @@ public class Sudoku {
     }
 
     public int getSize() {
-        return this.size;
+        return sudoku.size();
     }
 
-    public Map<Coordinate, Integer> getSudoku() {
+    public List<List<Integer>> getSudoku() {
         return sudoku;
     }
 
