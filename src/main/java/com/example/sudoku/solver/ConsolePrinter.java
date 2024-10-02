@@ -10,7 +10,7 @@ public class ConsolePrinter {
         for (int r = 0; r < sudoku.getSize(); r++){
             for (int c = 0; c < sudoku.getSize(); c++) {
                 result.append(
-                        sudoku.getSudoku().get(new Coordinate(r,c))
+                        sudoku.getCellByCoordinate(new Coordinate(r,c)).getValue()
                 ).append(" ");
             }
             result.append("\n");
@@ -29,8 +29,8 @@ public class ConsolePrinter {
                     .append("\n");
             for (int c = 0; c < sudoku.getSize(); c++) {
                 result.append("|")
-                        .append(getColor(sudoku.getSudoku().get(new Coordinate(r,c))))
-                        .append(String.format("  %d  ", sudoku.getSudoku().get(new Coordinate(r,c))))
+                        .append(getColor(sudoku.getCellByCoordinate(new Coordinate(r,c)).getValue()))
+                        .append(String.format("  %d  ", sudoku.getCellByCoordinate(new Coordinate(r,c)).getValue()))
                         .append(getColor(-1));
             }
             result.append("|\n");

@@ -37,7 +37,7 @@ public class Helper {
     }
 
     private static Set<Coordinate> getOtherCoordinates(Coordinate coordinate, int sq) {
-        int raw = coordinate.getRaw();
+        int raw = coordinate.getRow();
         int col = coordinate.getColumn();
 
         Set<Coordinate> result = new HashSet<>();

@@ -1,18 +1,18 @@
 package com.example.sudoku.solver;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class SudokuSolver {
 
     private static final int MAX_ITERATIONS = 10000;
 
     private final Sudoku sudoku;
-    private final Map<Coordinate, Integer> sudokuScheme;
+    private final List<Cell> sudokuScheme;
     private final int size;
 
     private final int[] possibleNumbers;
 
-    private final Map<Coordinate, Set<Integer>> emptyCells = new HashMap<>();
     private final Map<Coordinate, Set<Coordinate>> coordinatesSquares;
 
     public SudokuSolver(Sudoku sudoku){
@@ -47,160 +47,183 @@ public class SudokuSolver {
     }
 
     private void iterateOverCells(int iterations) {
-        for (Map.Entry<Coordinate, Integer> entry : sudokuScheme.entrySet()) {
-            if (entry.getValue() == 0) {
-                emptyCells.putIfAbsent(entry.getKey(), new HashSet<>());
-
-                searchNumberForCell(entry.getKey());
-//                    if (iterations > 0)
-//                        analyzePossibleNumbers(coordinate);
+        for (Cell cell : sudokuScheme) {
+            if (cell.getValue() == 0) {
+                searchNumberForCell(cell);
+//                if (cell.getValue() == 0)
+//                    analyzePossibleNumbers(cell);
             }
         }
     }
+//
+//    private void analyzePossibleNumbers(Cell cell) {
+//        // Controllo rispetto ai numeri possibili delle altre caselle
+//        int r = analyzePossibleNumbersOfRaw(cell);
+//        if (r != 0) {
+//            possibleNumbers.removeIf(i -> i != r);
+//            clearRawPossibilites(coordinate, r);
+//            if (isNumberFound(possibleNumbers, coordinate)) return;
+//        }
+//
+//        int c = analyzePossibleNumbersOfColumn(coordinate);
+//        if (c != 0) {
+//            possibleNumbers.removeIf(i -> i != c);
+//            if (isNumberFound(possibleNumbers, coordinate)) return;
+//        }
+//
+//        int s = analyzePossibleNumbersOfSquare(coordinate);
+//        if (s != 0) {
+//            possibleNumbers.removeIf(i -> i != s);
+//            if (isNumberFound(possibleNumbers, coordinate)) return;
+//        }
+//    }
+//
+//    private void clearRawPossibilites(Coordinate coordinate, int r) {
+//        Set<Integer> possibilites;
+//
+//        for (int i = coordinate.getColumn(); i < size; i++) {
+//            possibilites = emptyCells.get(new Coordinate(coordinate.getRow(), i));
+//            if (possibilites != null) possibilites.removeIf(n -> n != r);
+//        }
+//
+//        for (int i = coordinate.getColumn(); i > 0; i--) {
+//            possibilites = emptyCells.get(new Coordinate(coordinate.getRow(), i));
+//            if (possibilites != null) possibilites.removeIf(n -> n != r);
+//        }
+//    }
+//
+//    private int analyzePossibleNumbersOfSquare(Coordinate coordinate) {
+//        return 0;
+//    }
+//
+//    private int analyzePossibleNumbersOfColumn(Coordinate coordinate) {
+//        return 0;
+//    }
+//
+//    private int analyzePossibleNumbersOfRaw(Coordinate coordinate) {
+//        Set<Integer> coordinatePossibleNumbers = emptyCells.get(coordinate);
+//        if (coordinatePossibleNumbers == null) return 0;
+//
+//        Set<Integer> possibleNumbers = new HashSet<>();
+//        Set<Integer> possibilites;
+//
+//        for (int i = coordinate.getColumn(); i < size; i++) {
+//             possibilites = emptyCells.get(new Coordinate(coordinate.getRow(), i));
+//            if (possibilites != null) possibleNumbers.addAll(possibilites);
+//        }
+//
+//        for (int i = coordinate.getColumn(); i > 0; i--) {
+//            possibilites = emptyCells.get(new Coordinate(coordinate.getRow(), i));
+//            if (possibilites != null) possibleNumbers.addAll(possibilites);
+//        }
+//
+//        for (int coordinatePossibleNumber : coordinatePossibleNumbers) {
+//            if (!possibleNumbers.contains(coordinatePossibleNumber)) return coordinatePossibleNumber;
+//        }
+//
+//        return 0;
+//    }
 
-    private void analyzePossibleNumbers(Coordinate coordinate) {
-        Set<Integer> possibleNumbers = emptyCells.get(coordinate);
-        // Controllo rispetto ai numeri possibili delle altre caselle
-        int r = analyzePossibleNumbersOfRaw(coordinate);
-        if (r != 0) {
-            possibleNumbers.removeIf(i -> i != r);
-            clearRawPossibilites(coordinate, r);
-            if (isNumberFound(possibleNumbers, coordinate)) return;
+    private void searchNumberForCell(Cell cell) {
+        if (cell.getPossibleValues().size() == 1) {
+            cell.setValue(cell.getPossibleValues().stream().findFirst().get());
+            return;
         }
-
-        int c = analyzePossibleNumbersOfColumn(coordinate);
-        if (c != 0) {
-            possibleNumbers.removeIf(i -> i != c);
-            if (isNumberFound(possibleNumbers, coordinate)) return;
-        }
-
-        int s = analyzePossibleNumbersOfSquare(coordinate);
-        if (s != 0) {
-            possibleNumbers.removeIf(i -> i != s);
-            if (isNumberFound(possibleNumbers, coordinate)) return;
-        }
-    }
-
-    private void clearRawPossibilites(Coordinate coordinate, int r) {
-        Set<Integer> possibilites;
-
-        for (int i = coordinate.getColumn(); i < size; i++) {
-            possibilites = emptyCells.get(new Coordinate(coordinate.getRaw(), i));
-            if (possibilites != null) possibilites.removeIf(n -> n != r);
-        }
-
-        for (int i = coordinate.getColumn(); i > 0; i--) {
-            possibilites = emptyCells.get(new Coordinate(coordinate.getRaw(), i));
-            if (possibilites != null) possibilites.removeIf(n -> n != r);
-        }
-    }
-
-    private int analyzePossibleNumbersOfSquare(Coordinate coordinate) {
-        return 0;
-    }
-
-    private int analyzePossibleNumbersOfColumn(Coordinate coordinate) {
-        return 0;
-    }
-
-    private int analyzePossibleNumbersOfRaw(Coordinate coordinate) {
-        Set<Integer> coordinatePossibleNumbers = emptyCells.get(coordinate);
-        if (coordinatePossibleNumbers == null) return 0;
-
-        Set<Integer> possibleNumbers = new HashSet<>();
-        Set<Integer> possibilites;
-
-        for (int i = coordinate.getColumn(); i < size; i++) {
-             possibilites = emptyCells.get(new Coordinate(coordinate.getRaw(), i));
-            if (possibilites != null) possibleNumbers.addAll(possibilites);
-        }
-
-        for (int i = coordinate.getColumn(); i > 0; i--) {
-            possibilites = emptyCells.get(new Coordinate(coordinate.getRaw(), i));
-            if (possibilites != null) possibleNumbers.addAll(possibilites);
-        }
-
-        for (int coordinatePossibleNumber : coordinatePossibleNumbers) {
-            if (!possibleNumbers.contains(coordinatePossibleNumber)) return coordinatePossibleNumber;
-        }
-
-        return 0;
-    }
-
-    private void searchNumberForCell(Coordinate coordinate) {
-        int raw = coordinate.getRaw();
-        int col = coordinate.getColumn();
-
-        Set<Integer> possibleNumbers = emptyCells.get(coordinate);
 
         // Controllo rispetto ai numeri già inseriti
-        List<Integer> rawMissingNumbers = analyzeRow(raw);
-        if (!possibleNumbers.isEmpty()) {
-            possibleNumbers.removeIf(n -> !rawMissingNumbers.contains(n));
-        } else {
-            possibleNumbers.addAll(rawMissingNumbers);
+        Set<Integer> rawMissingNumbers = getMissingNumbersFromRow(cell.getCoordinate().getRow());
+        if (isNumberFound(rawMissingNumbers, cell)) return;
+
+        Set<Integer> colMissingNumbers = getMissingNumbersFromColumn(cell.getCoordinate().getColumn());
+        colMissingNumbers.removeIf(n -> !rawMissingNumbers.contains(n));
+        if (isNumberFound(colMissingNumbers, cell)) return;
+
+        Set<Integer> squareMissingNumbers = getMissingNumbersFromSquare(cell);
+        squareMissingNumbers.removeIf(n -> !colMissingNumbers.contains(n));
+        if (isNumberFound(squareMissingNumbers, cell)) {
+            return;
         }
-        if (isNumberFound(possibleNumbers, coordinate)) return;
-
-        List<Integer> colMissingNumbers = analyzeColumn(col);
-        possibleNumbers.removeIf(n -> !colMissingNumbers.contains(n));
-        if (isNumberFound(possibleNumbers, coordinate)) return;
-
-        List<Integer> squareMissingNumbers = analyzeSquare(raw, col);
-        possibleNumbers.removeIf(n -> !squareMissingNumbers.contains(n));
-        if (isNumberFound(possibleNumbers, coordinate)) return;
-
-        emptyCells.get(coordinate).addAll(possibleNumbers);
     }
 
-    private boolean isNumberFound(Set<Integer> possibleNumbers, Coordinate coordinate) {
+    private boolean isNumberFound(Set<Integer> possibleNumbers, Cell cell) {
         if (possibleNumbers.size() == 1) {
-            emptyCells.remove(coordinate);
-            sudokuScheme.put(coordinate, (Integer) possibleNumbers.toArray()[0]);
+            cell.setValue((Integer) possibleNumbers.toArray()[0]);
+            cell.clearPossibleValues();
+            clearOtherCellsPossibleValues(cell);
             return true;
+        } else {
+            cell.setPossibleValues(possibleNumbers);
+            return false;
         }
-        return false;
     }
 
-    private List<Integer> analyzeSquare(int raw, int col) {
-        List<Integer> squareNumbers = new ArrayList<>();
+    private void clearOtherCellsPossibleValues(Cell cell) {
+        clearOtherRowCellsPossibleValues(cell);
+        clearOtherColumnCellsPossibleValues(cell);
+        clearOtherSquareCellsPossibleValues(cell);
+    }
 
-        Set<Coordinate> coordinates = coordinatesSquares.get(new Coordinate(raw, col));
+    private void clearOtherRowCellsPossibleValues(Cell cell) {
+        sudokuScheme.forEach(c -> {
+            if (c.getCoordinate().getRow() == cell.getCoordinate().getRow() && !c.getPossibleValues().isEmpty()){
+                c.removePossibleValue(cell.getValue());
+            }
+        });
+    }
+
+    private void clearOtherColumnCellsPossibleValues(Cell cell) {
+        sudokuScheme.forEach(c -> {
+            if (c.getCoordinate().getColumn() == cell.getCoordinate().getColumn() && !c.getPossibleValues().isEmpty()){
+                c.removePossibleValue(cell.getValue());
+            }
+        });
+    }
+
+    private void clearOtherSquareCellsPossibleValues(Cell cell) {
+        Set<Coordinate> coordinates = coordinatesSquares.get(cell.getCoordinate());
         for (Coordinate coordinate : coordinates) {
-            int num = sudokuScheme.get(coordinate);
-            if (num != 0) {
-                squareNumbers.add(num);
+            Cell cell1 = sudoku.getCellByCoordinate(coordinate);
+            if (!cell1.getPossibleValues().isEmpty()) {
+                cell1.removePossibleValue(cell.getValue());
             }
         }
+    }
 
+    private Set<Integer> getMissingNumbersFromSquare(Cell cell) {
+        Set<Integer> squareNumbers = new HashSet<>();
+        Set<Coordinate> coordinates = coordinatesSquares.get(cell.getCoordinate());
+        for (Coordinate coordinate : coordinates) {
+            Cell cell1 = sudoku.getCellByCoordinate(coordinate);
+            if (cell1.getValue() != 0) squareNumbers.add(cell1.getValue());
+        }
         return getMissingNumbersFromList(squareNumbers);
     }
 
-    private List<Integer> analyzeColumn(int column) {
-        List<Integer> columnNumbers = new ArrayList<>();
-        for (int i = 0; i < sudoku.getSize(); i++) {
-            columnNumbers.add(sudokuScheme.get(new Coordinate(i, column)));
-        }
+    private Set<Integer> getMissingNumbersFromColumn(int column) {
+        Set<Integer> columnNumbers = sudokuScheme.stream()
+                .filter(c -> c.getCoordinate().getColumn() == column && c.getValue() != 0)
+                .map(Cell::getValue)
+                .collect(Collectors.toSet());
         return getMissingNumbersFromList(columnNumbers);
     }
 
-    private List<Integer> analyzeRow(int raw) {
-        List<Integer> list = new ArrayList<>();
-        for (int i = 0; i < sudoku.getSize(); i++) {
-            list.add(sudokuScheme.get(new Coordinate(raw, i)));
-        }
-        return getMissingNumbersFromList(list);
+    private Set<Integer> getMissingNumbersFromRow(int row) {
+        Set<Integer> rowNumbers = sudokuScheme.stream()
+                .filter(c -> c.getCoordinate().getRow() == row && c.getValue() != 0)
+                .map(Cell::getValue)
+                .collect(Collectors.toSet());
+        return getMissingNumbersFromList(rowNumbers);
     }
 
-    private List<Integer> getMissingNumbersFromList(List<Integer> numbers) {
-        List<Integer> result = new ArrayList<>();
+    private Set<Integer> getMissingNumbersFromList(Set<Integer> numbers) {
+        Set<Integer> result = new HashSet<>();
         for (int i : possibleNumbers) {
             if (!numbers.contains(i)) result.add(i);
         }
         return result;
     }
 
-    private boolean isSolved(Map<Coordinate, Integer> sudoku) {
-        return !sudoku.containsValue(0);
+    private boolean isSolved(List<Cell> sudoku) {
+        return sudoku.stream().noneMatch(c -> c.getValue() == 0);
     }
 }
