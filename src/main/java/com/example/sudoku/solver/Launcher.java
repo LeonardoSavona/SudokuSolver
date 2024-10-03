@@ -9,7 +9,7 @@ import java.io.File;
 
 public class Launcher {
 
-    private static final String LEVEL = "expert";
+    private static final String LEVEL = "master";
 
     public static void main(String[] args) throws Exception {
         File sudokuFile = new File(Launcher.class.getClassLoader().getResource("sudoku/sudoku_"+LEVEL).toURI());
@@ -30,7 +30,7 @@ public class Launcher {
         System.out.println("Result: \n"+ ConsolePrinter.getSudokuAsStandardString(solvedSudoku));
         JSONHelper.saveChronology();
 
-        System.out.println("Solution: \n"+ConsolePrinter.getSudokuAsString(sudokuSolution));
+        System.out.println("Solution: \n"+ConsolePrinter.getSudokuAsStandardString(sudokuSolution));
         if (solvedSudoku.equals(sudokuSolution)) {
             System.out.println("Sudoko solved successfully in "+time+"ms !");
         } else {

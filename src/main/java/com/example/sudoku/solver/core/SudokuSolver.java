@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 public class SudokuSolver {
 
-    private static final int MAX_ITERATIONS = 100;
+    private static final int MAX_ITERATIONS = 5;
 
     private final Sudoku sudoku;
     private final List<Cell> sudokuScheme;
@@ -43,7 +43,7 @@ public class SudokuSolver {
 
             if (iterations < 10 || iterations % 10 == 0)
                 JSONHelper.addSudoku(sudoku);
-                System.out.println("Solution after "+iterations+" iterations: \n"+ ConsolePrinter.getSudokuAsString(sudoku));
+                System.out.println("Solution after "+iterations+" iterations: \n"+ ConsolePrinter.getSudokuAsStandardString(sudoku));
         }
 
         if (solved)
