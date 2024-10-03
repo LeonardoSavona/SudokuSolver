@@ -1,4 +1,4 @@
-package com.example.sudoku.solver;
+package com.example.sudoku.solver.core;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -48,5 +48,13 @@ public class Cell {
 
     public void setValue(Integer value) {
         this.value = value;
+    }
+
+    @Override
+    public String toString() {
+        return "Cell{" + coordinate +
+                ", value=" + value +
+                ", possibleValues=" + possibleValues +
+                '}';
     }
 }

@@ -1,4 +1,8 @@
-package com.example.sudoku.solver;
+package com.example.sudoku.solver.core;
+
+import com.example.sudoku.solver.helper.ConsolePrinter;
+import com.example.sudoku.solver.helper.Helper;
+import com.example.sudoku.solver.helper.JSONHelper;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -9,15 +13,15 @@ public class SudokuSolver {
 
     private final Sudoku sudoku;
     private final List<Cell> sudokuScheme;
-    private final int size;
 
     private final int[] possibleNumbers;
 
     private final Map<Coordinate, Set<Coordinate>> coordinatesSquares;
+    private Set<Square> squares;
 
     public SudokuSolver(Sudoku sudoku){
         this.sudoku = sudoku;
-        this.size = sudoku.getSize();
+        int size = sudoku.getSize();
         this.sudokuScheme = sudoku.getSudoku();
 
         this.possibleNumbers = new int[size];
@@ -26,6 +30,7 @@ public class SudokuSolver {
         }
 
         coordinatesSquares = Helper.getCoordinatesSquare(size);
+        squares = Helper.getSquares(sudoku, coordinatesSquares);
     }
 
     public Sudoku solve() {
@@ -77,6 +82,45 @@ public class SudokuSolver {
         Set<Integer> squareMissingNumbers = getMissingNumbersFromSquare(cell);
         cell.getPossibleValues().removeIf(n -> !squareMissingNumbers.contains(n));
         if (isNumberFound(cell)) return;
+
+        JSONHelper.addSudoku(sudoku);
+
+        // per ogni possibleValue controllare se è l'unico presenta nella riga, colonna o quadrato, se è l'unico, allora settarlo come unico possible value e lanciare isNumberFound()
+        for (int possibleValue : cell.getPossibleValues()) {
+            if (!isPresentInOtherRowsPossibleValues(cell, possibleValue) ||
+                    !isPresentInOtherColumnsPossibleValues(cell, possibleValue) ||
+                    !isPresentInOtherSquaresPossibleValues(cell, possibleValue)) {
+
+                cell.clearPossibleValues();
+                cell.addPossibleValue(possibleValue);
+                break;
+            }
+        }
+        if (isNumberFound(cell)) return;
+    }
+
+    private boolean isPresentInOtherSquaresPossibleValues(Cell cell, int possibleValue) {
+        Square square = squares.stream().filter(s -> s.getCells().contains(cell)).findFirst().get();
+        return square.getCells().stream()
+                .anyMatch(c -> c.getValue() == 0 && (c.getPossibleValues().isEmpty() || c.getPossibleValues().contains(possibleValue)));
+    }
+
+    private boolean isPresentInOtherRowsPossibleValues(Cell cell, int possibleValue) {
+        return sudokuScheme.stream()
+                .filter(c -> c.getCoordinate().getRow() == cell.getCoordinate().getRow() &&
+                        c.getCoordinate().getColumn() != cell.getCoordinate().getColumn())
+                .collect(Collectors.toSet())
+                .stream()
+                .anyMatch(c -> c.getValue() == 0 && (c.getPossibleValues().isEmpty() || c.getPossibleValues().contains(possibleValue)));
+    }
+
+    private boolean isPresentInOtherColumnsPossibleValues(Cell cell, int possibleValue) {
+        return sudokuScheme.stream()
+                .filter(c -> c.getCoordinate().getColumn() == cell.getCoordinate().getColumn() &&
+                                c.getCoordinate().getRow() != cell.getCoordinate().getRow())
+                .collect(Collectors.toSet())
+                .stream()
+                .anyMatch(c -> c.getValue() == 0 && (c.getPossibleValues().isEmpty() || c.getPossibleValues().contains(possibleValue)));
     }
 
     private boolean isNumberFound(Cell cell) {

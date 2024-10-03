@@ -1,4 +1,7 @@
-package com.example.sudoku.solver;
+package com.example.sudoku.solver.helper;
+
+import com.example.sudoku.solver.core.Coordinate;
+import com.example.sudoku.solver.core.Sudoku;
 
 public class ConsolePrinter {
 

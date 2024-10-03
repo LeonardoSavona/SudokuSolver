@@ -1,10 +1,15 @@
 package com.example.sudoku.solver;
 
+import com.example.sudoku.solver.core.Sudoku;
+import com.example.sudoku.solver.core.SudokuSolver;
+import com.example.sudoku.solver.helper.ConsolePrinter;
+import com.example.sudoku.solver.helper.JSONHelper;
+
 import java.io.File;
 
 public class Launcher {
 
-    private static final String LEVEL = "hard";
+    private static final String LEVEL = "expert";
 
     public static void main(String[] args) throws Exception {
         File sudokuFile = new File(Launcher.class.getClassLoader().getResource("sudoku/sudoku_"+LEVEL).toURI());
@@ -22,7 +27,7 @@ public class Launcher {
         Sudoku solvedSudoku = sudokuSolver.solve();
         double time = (System.currentTimeMillis()-start);
 
-        System.out.println("Result: \n"+ConsolePrinter.getSudokuAsString(solvedSudoku));
+        System.out.println("Result: \n"+ ConsolePrinter.getSudokuAsStandardString(solvedSudoku));
         JSONHelper.saveChronology();
 
         System.out.println("Solution: \n"+ConsolePrinter.getSudokuAsString(sudokuSolution));

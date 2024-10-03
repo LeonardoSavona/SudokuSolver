@@ -1,5 +1,7 @@
-package com.example.sudoku.solver;
+package com.example.sudoku.solver.helper;
 
+import com.example.sudoku.solver.core.Cell;
+import com.example.sudoku.solver.core.Sudoku;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 

@@ -1,7 +1,8 @@
-package com.example.sudoku.solver;
+package com.example.sudoku.solver.core;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Row {
 
@@ -27,5 +28,23 @@ public class Row {
 
     public void addCell(Cell cell) {
         this.cells.add(cell);
+    }
+
+    @Override
+    public String toString() {
+        return "Row" + cells;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Row row = (Row) o;
+        return index == row.index && cells.equals(row.cells);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(index, cells);
     }
 }

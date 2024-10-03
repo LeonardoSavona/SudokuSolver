@@ -1,4 +1,4 @@
-package com.example.sudoku.solver;
+package com.example.sudoku.solver.core;
 
 import java.util.Objects;
 
@@ -31,5 +31,10 @@ public class Coordinate {
     @Override
     public int hashCode() {
         return Objects.hash(row, column);
+    }
+
+    @Override
+    public String toString() {
+        return "(" + row + "," + column + ')';
     }
 }

@@ -1,4 +1,6 @@
-package com.example.sudoku.solver;
+package com.example.sudoku.solver.core;
+
+import com.example.sudoku.solver.helper.ConsolePrinter;
 
 import java.io.*;
 import java.util.*;
