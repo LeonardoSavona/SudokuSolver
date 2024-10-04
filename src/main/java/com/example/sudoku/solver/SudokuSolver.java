@@ -64,6 +64,13 @@ public class SudokuSolver {
         for (int r = 0; r < sudoku.getSize(); r++) {
             applyCoupleOfCandidates(getNotEmptyRowCells(r));
             applyCoupleOfCandidates(getNotEmptyColumnCells(r));
+
+        }
+
+        int sq = (int) Math.sqrt(sudoku.getSize());
+        for (Cell cell : sudoku.getSudoku()) {
+            if (cell.getCoordinate().getRow() % sq == 0 && cell.getCoordinate().getColumn() % sq ==0)
+                applyCoupleOfCandidates(getNotEmptySquareCells(cell));
         }
     }
 
@@ -161,6 +168,14 @@ public class SudokuSolver {
         return new HashSet<>();
     }
 
+    private Set<Cell> getNotEmptySquareCells(Cell cell) {
+        Square square = getSquareFromCell(cell);
+        if (square.getCells().stream().allMatch(c -> c.getValue() != 0 || c.getPossibleValues().size() > 1)) {
+            return square.getCells();
+        }
+        return new HashSet<>();
+    }
+
     private Set<Cell> getCellsThatContainsCellPossibleValues(Cell cell, Set<Cell> cells) {
         return cells.stream()
                 .filter(c -> c.getPossibleValues().containsAll(cell.getPossibleValues()))
@@ -225,8 +240,12 @@ public class SudokuSolver {
         if (isNumberFound(cell)) return;
     }
 
+    private Square getSquareFromCell(Cell cell) {
+        return squares.stream().filter(s -> s.getCells().contains(cell)).findFirst().get();
+    }
+
     private boolean isPresentInOtherSquaresPossibleValues(Cell cell, int possibleValue) {
-        Square square = squares.stream().filter(s -> s.getCells().contains(cell)).findFirst().get();
+        Square square = getSquareFromCell(cell);
         return square.getCells().stream()
                 .anyMatch(c -> c.getValue() == 0 && (c.getPossibleValues().isEmpty() || c.getPossibleValues().contains(possibleValue)));
     }
