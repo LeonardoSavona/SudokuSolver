@@ -1,7 +1,6 @@
-package com.example.sudoku.solver.core;
+package com.example.sudoku.solver.entity;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Square {
 

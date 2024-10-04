@@ -1,6 +1,6 @@
 package com.example.sudoku.solver.helper;
 
-import com.example.sudoku.solver.core.*;
+import com.example.sudoku.solver.entity.*;
 
 import java.util.*;
 import java.util.stream.Collectors;

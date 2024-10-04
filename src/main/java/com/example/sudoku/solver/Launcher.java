@@ -1,7 +1,6 @@
 package com.example.sudoku.solver;
 
-import com.example.sudoku.solver.core.Sudoku;
-import com.example.sudoku.solver.core.SudokuSolver;
+import com.example.sudoku.solver.entity.Sudoku;
 import com.example.sudoku.solver.helper.ConsolePrinter;
 import com.example.sudoku.solver.helper.JSONHelper;
 

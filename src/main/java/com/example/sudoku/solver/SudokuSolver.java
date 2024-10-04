@@ -1,5 +1,9 @@
-package com.example.sudoku.solver.core;
+package com.example.sudoku.solver;
 
+import com.example.sudoku.solver.entity.Cell;
+import com.example.sudoku.solver.entity.Coordinate;
+import com.example.sudoku.solver.entity.Square;
+import com.example.sudoku.solver.entity.Sudoku;
 import com.example.sudoku.solver.helper.ConsolePrinter;
 import com.example.sudoku.solver.helper.Helper;
 import com.example.sudoku.solver.helper.JSONHelper;
@@ -17,7 +21,7 @@ public class SudokuSolver {
     private final int[] possibleNumbers;
 
     private final Map<Coordinate, Set<Coordinate>> coordinatesSquares;
-    private Set<Square> squares;
+    private final Set<Square> squares;
 
     public SudokuSolver(Sudoku sudoku){
         this.sudoku = sudoku;
@@ -38,18 +42,70 @@ public class SudokuSolver {
         boolean solved = false;
         while (!solved && iterations < MAX_ITERATIONS) {
             iterateOverCells();
+            trioOfCandidatesStrategy();
             solved = isSolved(sudoku.getSudoku());
             iterations++;
 
-            if (iterations < 10 || iterations % 10 == 0)
-                JSONHelper.addSudoku(sudoku);
-                System.out.println("Solution after "+iterations+" iterations: \n"+ ConsolePrinter.getSudokuAsStandardString(sudoku));
+            JSONHelper.addSudoku(sudoku);
+            System.out.println("Solution after "+iterations+" iterations: \n"+ ConsolePrinter.getSudokuAsStandardString(sudoku));
         }
 
         if (solved)
             System.out.println("Solved after "+iterations+" iterations");
 
         return sudoku;
+    }
+
+    private void trioOfCandidatesStrategy() {
+        for (int r = 0; r < sudoku.getSize(); r++) {
+            int finalR = r;
+            Set<Cell> rowCells = sudoku.getSudoku().stream()
+                    .filter(c -> c.getCoordinate().getRow() == finalR)
+                    .collect(Collectors.toSet());
+            applyTrioOfCandidates(rowCells);
+
+            Set<Cell> colCells = sudoku.getSudoku().stream()
+                    .filter(cell -> cell.getCoordinate().getColumn() == finalR)
+                    .collect(Collectors.toSet());
+            applyTrioOfCandidates(colCells);
+        }
+    }
+
+    private void applyTrioOfCandidates(Set<Cell> cells) {
+        Map<Cell, Set<Cell>> map = new HashMap<>();
+        for (Cell cell : cells) {
+            if (cell.getValue() == 0) {
+                map.put(cell, getCellsThatContainsCellPossibleValues(cell, cells.stream()
+                        .filter(c -> c.getValue() == 0 && !c.equals(cell)).collect(Collectors.toSet())));
+            }
+        }
+
+        for (Map.Entry<Cell, Set<Cell>> entry : map.entrySet()) {
+            Cell cell = entry.getKey();
+            Set<Cell> cellSet = entry.getValue();
+
+            if (cellSet.size() == 2) {
+                Set<Cell> cellsTrio = new HashSet<>(cellSet);
+                cellsTrio.add(cell);
+
+                Set<Integer> possibleCellsNumbers = cellsTrio.stream()
+                        .map(Cell::getPossibleValues)
+                        .flatMap(Set::stream)
+                        .collect(Collectors.toSet());
+
+                if (cellsTrio.size() == possibleCellsNumbers.size()) {
+                    for (int possibleCellNumber : possibleCellsNumbers) {
+                        cells.forEach(c -> c.removePossibleValue(possibleCellNumber));
+                    }
+                }
+            }
+        }
+    }
+
+    private Set<Cell> getCellsThatContainsCellPossibleValues(Cell cell, Set<Cell> cells) {
+        return cells.stream()
+                .filter(c -> c.getPossibleValues().containsAll(cell.getPossibleValues()))
+                .collect(Collectors.toSet());
     }
 
     private void iterateOverCells() {

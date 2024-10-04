@@ -1,19 +1,20 @@
-package com.example.sudoku.solver.core;
+package com.example.sudoku.solver.entity;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
-public class Row {
+public class Column {
 
     private final int index;
     private List<Cell> cells = new ArrayList<>();
 
-    public Row(int index) {
+    public Column(int index) {
         this.index = index;
     }
 
-    public Row(List<Cell> cells, int index) {
+    public Column(List<Cell> cells, int index) {
         this.cells = cells;
         this.index = index;
     }
@@ -30,17 +31,23 @@ public class Row {
         this.cells.add(cell);
     }
 
+    public List<Integer> getColumnPossibleValues() {
+        return getCells().stream()
+                .flatMap(cell -> cell.getPossibleValues().stream())
+                .collect(Collectors.toList());
+    }
+
     @Override
     public String toString() {
-        return "Row" + cells;
+        return "Column" + cells;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Row row = (Row) o;
-        return index == row.index && cells.equals(row.cells);
+        Column column = (Column) o;
+        return index == column.index && cells.equals(column.cells);
     }
 
     @Override

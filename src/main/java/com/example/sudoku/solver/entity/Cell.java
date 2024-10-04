@@ -1,4 +1,4 @@
-package com.example.sudoku.solver.core;
+package com.example.sudoku.solver.entity;
 
 import java.util.HashSet;
 import java.util.Set;

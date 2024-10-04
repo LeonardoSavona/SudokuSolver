@@ -1,4 +1,4 @@
-package com.example.sudoku.solver.core;
+package com.example.sudoku.solver.entity;
 
 import com.example.sudoku.solver.helper.ConsolePrinter;
 
