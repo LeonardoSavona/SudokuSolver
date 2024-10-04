@@ -1,19 +1,19 @@
-package com.example.sudoku.solver;
+package com.example.sudoku.solver.entity;
 
 import java.util.Objects;
 
 public class Coordinate {
 
-    private final int raw;
+    private final int row;
     private final int column;
 
     public Coordinate(int raw, int column) {
-        this.raw = raw;
+        this.row = raw;
         this.column = column;
     }
 
-    public int getRaw() {
-        return raw;
+    public int getRow() {
+        return row;
     }
 
     public int getColumn() {
@@ -25,11 +25,16 @@ public class Coordinate {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Coordinate that = (Coordinate) o;
-        return raw == that.raw && column == that.column;
+        return row == that.row && column == that.column;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(raw, column);
+        return Objects.hash(row, column);
+    }
+
+    @Override
+    public String toString() {
+        return "(" + row + "," + column + ')';
     }
 }

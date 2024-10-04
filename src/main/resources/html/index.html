@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sudoku</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 300px; /* Dimensione ridotta per adattarsi a più tabelle in una riga */
+            height: 300px;
+            margin: 10px auto;
+        }
+        td {
+            border: 1px solid black;
+            width: 30px; /* Dimensione ridotta delle celle */
+            height: 30px;
+            text-align: center;
+            vertical-align: middle;
+            font-size: 18px;
+            position: relative;
+        }
+        /* Stile per evidenziare i blocchi 3x3 */
+        td:nth-child(3n) {
+            border-right: 3px solid black;
+        }
+        tr:nth-child(3n) td {
+            border-bottom: 3px solid black;
+        }
+        td:first-child {
+            border-left: 3px solid black;
+        }
+        tr:first-child td {
+            border-top: 3px solid black;
+        }
+        .possible-values {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            font-size: 10px;
+        }
+        .bold {
+            font-weight: bold;
+            font-size: 24px;
+        }
+        .possible-value {
+            text-align: center;
+            vertical-align: middle;
+        }
+        .iteration-title {
+            font-size: 24px;
+            text-align: center;
+            margin-top: 10px;
+        }
+        /* Layout flessibile per 3 iterazioni per riga */
+        .sudoku-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+        .sudoku-item {
+            margin: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div id="sudoku-iterations" class="sudoku-container"></div> <!-- Div per contenere tutti i Sudoku -->
+
+<script>
+        // Funzione per creare la tabella Sudoku
+        function createSudokuTable(cells, iterationNumber) {
+            const container = document.getElementById('sudoku-iterations');
+
+            // Crea un div per ciascun Sudoku
+            const sudokuItem = document.createElement('div');
+            sudokuItem.className = 'sudoku-item';
+
+            // Crea il titolo dell'iterazione
+            const iterationTitle = document.createElement('h2');
+            iterationTitle.className = 'iteration-title';
+            iterationTitle.textContent = 'Iteration ' + iterationNumber;
+            sudokuItem.appendChild(iterationTitle);
+
+            // Crea la tabella Sudoku
+            const table = document.createElement('table');
+
+            for (let row = 0; row < 9; row++) {
+                const tr = document.createElement('tr');
+
+                for (let col = 0; col < 9; col++) {
+                    const td = document.createElement('td');
+                    const cell = cells.find(c => c.row === row && c.column === col);
+
+                    if (cell.value > 0) {
+                        // Se c'è un valore, mostralo in grassetto
+                        td.innerHTML = `<span class="bold">${cell.value}</span>`;
+                    } else if (cell.possible_values.length > 0) {
+                        // Se ci sono valori possibili, mettili nella griglia 3x3 in base al valore
+                        const possibleValuesGrid = document.createElement('div');
+                        possibleValuesGrid.className = 'possible-values';
+
+                        // Crea una griglia 3x3 con 9 spazi vuoti iniziali
+                        const grid = Array(9).fill('');
+
+                        // Inserisci i valori possibili nelle posizioni corrette
+                        cell.possible_values.forEach(value => {
+                            grid[value - 1] = value; // Posiziona il valore nella griglia
+                        });
+
+                        // Aggiungi i valori alla griglia
+                        grid.forEach(value => {
+                            const smallDiv = document.createElement('div');
+                            smallDiv.className = 'possible-value';
+                            smallDiv.textContent = value ? value : ''; // Se c'è un valore, visualizzalo
+                            possibleValuesGrid.appendChild(smallDiv);
+                        });
+
+                        td.appendChild(possibleValuesGrid);
+                    }
+
+                    tr.appendChild(td);
+                }
+
+                table.appendChild(tr);
+            }
+
+            sudokuItem.appendChild(table); // Aggiungi la tabella Sudoku all'elemento item
+            container.appendChild(sudokuItem); // Aggiungi l'item al container principale
+        }
+
+        // Carica il file JSON esterno e crea la tabella per ogni iterazione
+        fetch('sudoku.json')
+            .then(response => response.json())
+            .then(data => {
+                data.forEach((iteration, index) => {
+                    createSudokuTable(iteration.cells, index + 1); // Passa le celle e il numero di iterazione
+                });
+            })
+            .catch(error => console.error('Errore nel caricamento del file JSON:', error));
+    </script>
+
+</body>
+</html>

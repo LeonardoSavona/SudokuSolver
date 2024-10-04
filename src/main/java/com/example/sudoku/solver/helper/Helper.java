@@ -1,9 +1,9 @@
-package com.example.sudoku.solver;
+package com.example.sudoku.solver.helper;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import com.example.sudoku.solver.entity.*;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Helper {
 
@@ -37,7 +37,7 @@ public class Helper {
     }
 
     private static Set<Coordinate> getOtherCoordinates(Coordinate coordinate, int sq) {
-        int raw = coordinate.getRaw();
+        int raw = coordinate.getRow();
         int col = coordinate.getColumn();
 
         Set<Coordinate> result = new HashSet<>();
@@ -48,5 +48,26 @@ public class Helper {
         }
 
         return result;
+    }
+
+    public static Set<Square> getSquares(Sudoku sudoku, Map<Coordinate, Set<Coordinate>> coordinatesSquare) {
+        Set<Square> squares = new HashSet<>();
+        for (Coordinate coordinate : coordinatesSquare.keySet()) {
+            Set<Cell> cells = coordinatesSquare.get(coordinate).stream()
+                    .map(sudoku::getCellByCoordinate)
+                    .collect(Collectors.toSet());
+            cells.add(sudoku.getCellByCoordinate(coordinate));
+            Square square = new Square(cells);
+            squares.add(square);
+        }
+
+        return squares;
+    }
+
+    public static List<Integer> getRepeatedNumbersFromList(List<Integer> list) {
+        return list.stream()
+                .filter(n -> Collections.frequency(list, n) > 1)
+                .distinct()
+                .collect(Collectors.toList());
     }
 }

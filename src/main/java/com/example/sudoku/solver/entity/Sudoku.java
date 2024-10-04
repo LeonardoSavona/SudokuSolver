@@ -1,22 +1,21 @@
-package com.example.sudoku.solver;
+package com.example.sudoku.solver.entity;
+
+import com.example.sudoku.solver.helper.ConsolePrinter;
 
 import java.io.*;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Sudoku {
 
-    private List<List<Integer>> sudoku = new ArrayList<>();
+    private List<Cell> sudoku = new ArrayList<>();
+    private int size;
 
     public Sudoku(File sudokuFile) throws Exception {
         loadSudoku(sudokuFile);
     }
 
-    public Sudoku(List<List<Integer>> sudoku) {
+    public Sudoku(List<Cell> sudoku) {
         this.sudoku = sudoku;
     }
 
@@ -24,14 +23,26 @@ public class Sudoku {
         try (FileReader fileReader = new FileReader(sudokuFile);
              BufferedReader bufferedReader = new BufferedReader(fileReader)) {
 
+            List<List<Integer>> tempSudoku = new ArrayList<>();
             String line = bufferedReader.readLine();
             while (line != null) {
                 List<Integer> row = Arrays.stream(line.split(" "))
                         .map(Integer::new)
                         .collect(Collectors.toList());
 
-                sudoku.add(row);
+                tempSudoku.add(row);
                 line = bufferedReader.readLine();
+            }
+            this.size = tempSudoku.size();
+            for (int r = 0; r < getSize(); r++) {
+                for (int c = 0; c < getSize(); c++) {
+                    sudoku.add(
+                            new Cell(
+                                    new Coordinate(r, c),
+                                    tempSudoku.get(r).get(c)
+                            )
+                    );
+                }
             }
         } catch (IOException e) {
             throw new Exception(e);
@@ -39,11 +50,15 @@ public class Sudoku {
     }
 
     public int getSize() {
-        return sudoku.size();
+        return this.size;
     }
 
-    public List<List<Integer>> getSudoku() {
+    public List<Cell> getSudoku() {
         return sudoku;
+    }
+
+    public Cell getCellByCoordinate(Coordinate coordinate) {
+        return sudoku.stream().filter(c -> c.getCoordinate().equals(coordinate)).findFirst().get();
     }
 
     @Override
@@ -55,8 +70,13 @@ public class Sudoku {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         Sudoku sudoku1 = (Sudoku) o;
-        return sudoku.equals(sudoku1.sudoku);
+        for (Cell cell : sudoku) {
+            Cell sudoku1Cell = sudoku1.getCellByCoordinate(cell.getCoordinate());
+            if (cell.getValue() != sudoku1Cell.getValue()) return false;
+        }
+        return true;
     }
 
     @Override

@@ -1,14 +1,17 @@
-package com.example.sudoku.solver;
+package com.example.sudoku.solver.helper;
 
-import java.util.List;
+import com.example.sudoku.solver.entity.Coordinate;
+import com.example.sudoku.solver.entity.Sudoku;
 
 public class ConsolePrinter {
 
     public static String getSudokuAsStandardString(Sudoku sudoku) {
         StringBuilder result = new StringBuilder();
-        for (List<Integer> row : sudoku.getSudoku()) {
-            for (Integer num : row) {
-                result.append(num).append(" ");
+        for (int r = 0; r < sudoku.getSize(); r++){
+            for (int c = 0; c < sudoku.getSize(); c++) {
+                result.append(
+                        sudoku.getCellByCoordinate(new Coordinate(r,c)).getValue()
+                ).append(" ");
             }
             result.append("\n");
         }
@@ -17,22 +20,24 @@ public class ConsolePrinter {
 
     public static String getSudokuAsString(Sudoku sudoku) {
         StringBuilder result = new StringBuilder();
-        for (List<Integer> row : sudoku.getSudoku()) {
+        int i = 0;
+
+        for (int r = 0; r < sudoku.getSize(); r++) {
             result.append(getColor(-1))
                     .append("+")
-                    .append(new String(new char[row.size()]).replace("\0", "-----+"))
+                    .append(new String(new char[sudoku.getSize()]).replace("\0", "-----+"))
                     .append("\n");
-
-            for (Integer num : row) {
+            for (int c = 0; c < sudoku.getSize(); c++) {
                 result.append("|")
-                        .append(getColor(num))
-                        .append(String.format("  %d  ", num))
+                        .append(getColor(sudoku.getCellByCoordinate(new Coordinate(r,c)).getValue()))
+                        .append(String.format("  %d  ", sudoku.getCellByCoordinate(new Coordinate(r,c)).getValue()))
                         .append(getColor(-1));
             }
             result.append("|\n");
         }
+
         result.append("+")
-                .append(new String(new char[sudoku.getSudoku().get(0).size()]).replace("\0", "-----+"));
+                .append(new String(new char[sudoku.getSize()]).replace("\0", "-----+"));
         return result.toString();
     }
 
@@ -44,7 +49,7 @@ public class ConsolePrinter {
             case 0:
                 return "\u001B[30m";
             case 1:
-                return "\u001B[31m";
+                return "\u001B[38m";
             case 2:
                 return "\u001B[32m";
             case 3:
@@ -58,7 +63,7 @@ public class ConsolePrinter {
             case 7:
                 return "\u001B[37m";
             case 8:
-                return "\u001B[38m";
+                return "\u001B[31m";
             default:
                 return "\u001B[0m";
         }
