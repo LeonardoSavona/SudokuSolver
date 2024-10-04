@@ -45,10 +45,12 @@ public class SudokuSolver {
             JSONHelper.addSudoku(sudoku);
             trioOfCandidatesStrategy();
             JSONHelper.addSudoku(sudoku);
+            coupleOfCandidatesStrategy();
+            JSONHelper.addSudoku(sudoku);
+
             solved = isSolved(sudoku.getSudoku());
             iterations++;
 
-            JSONHelper.addSudoku(sudoku);
             System.out.println("Solution after "+iterations+" iterations: \n"+ ConsolePrinter.getSudokuAsStandardString(sudoku));
         }
 
@@ -58,23 +60,52 @@ public class SudokuSolver {
         return sudoku;
     }
 
+    private void coupleOfCandidatesStrategy() {
+        for (int r = 0; r < sudoku.getSize(); r++) {
+            applyCoupleOfCandidates(getNotEmptyRowCells(r));
+            applyCoupleOfCandidates(getNotEmptyColumnCells(r));
+        }
+    }
+
     private void trioOfCandidatesStrategy() {
         for (int r = 0; r < sudoku.getSize(); r++) {
-            int finalR = r;
-            Set<Cell> rowCells = sudoku.getSudoku().stream()
-                    .filter(c -> c.getCoordinate().getRow() == finalR)
-                    .collect(Collectors.toSet());
-            if (rowCells.stream().allMatch(cell -> cell.getValue() != 0 || cell.getPossibleValues().size() > 1)) {
-                applyTrioOfCandidates(rowCells);
-            }
+            applyTrioOfCandidates(getNotEmptyRowCells(r));
+            applyTrioOfCandidates(getNotEmptyColumnCells(r));
+        }
+    }
 
-            Set<Cell> colCells = sudoku.getSudoku().stream()
-                    .filter(cell -> cell.getCoordinate().getColumn() == finalR)
-                    .collect(Collectors.toSet());
-            if (colCells.stream().allMatch(cell -> cell.getValue() != 0 || cell.getPossibleValues().size() > 1)) {
-                applyTrioOfCandidates(colCells);
+    private void applyCoupleOfCandidates(Set<Cell> cells) {
+        Map<Cell, Set<Cell>> map = new HashMap<>();
+        for (Cell cell : cells) {
+            if (cell.getValue() == 0 && cell.getPossibleValues().size() == 2) {
+                map.put(cell, getCellsThatHasCellPossibleValues(cell, cells.stream()
+                        .filter(c -> c.getValue() == 0 && !c.equals(cell)).collect(Collectors.toSet())));
             }
         }
+
+        for (Map.Entry<Cell, Set<Cell>> entry : map.entrySet()) {
+            Cell cell = entry.getKey();
+            Set<Cell> cellSet = entry.getValue();
+
+            if (cellSet.size() > 0) {
+                Set<Cell> cellsCouple = new HashSet<>(cellSet);
+                cellsCouple.add(cell);
+
+                Set<Integer> possibleCellsNumbers = cellsCouple.stream()
+                        .map(Cell::getPossibleValues)
+                        .flatMap(Set::stream)
+                        .collect(Collectors.toSet());
+
+                if (cellsCouple.size() == possibleCellsNumbers.size()) {
+                    for (int possibleCellNumber : possibleCellsNumbers) {
+                        cells.stream()
+                                .filter(c -> !cellsCouple.contains(c))
+                                .forEach(c -> c.removePossibleValue(possibleCellNumber));
+                    }
+                }
+            }
+        }
+
     }
 
     private void applyTrioOfCandidates(Set<Cell> cells) {
@@ -110,10 +141,41 @@ public class SudokuSolver {
         }
     }
 
+    private Set<Cell> getNotEmptyRowCells(int finalR) {
+        Set<Cell> rowCells = sudoku.getSudoku().stream()
+                .filter(c -> c.getCoordinate().getRow() == finalR)
+                .collect(Collectors.toSet());
+        if (rowCells.stream().allMatch(cell -> cell.getValue() != 0 || cell.getPossibleValues().size() > 1)) {
+            return rowCells;
+        }
+        return new HashSet<>();
+    }
+
+    private Set<Cell> getNotEmptyColumnCells(int finalR) {
+        Set<Cell> colCells = sudoku.getSudoku().stream()
+                .filter(cell -> cell.getCoordinate().getColumn() == finalR)
+                .collect(Collectors.toSet());
+        if (colCells.stream().allMatch(cell -> cell.getValue() != 0 || cell.getPossibleValues().size() > 1)) {
+            return colCells;
+        }
+        return new HashSet<>();
+    }
+
     private Set<Cell> getCellsThatContainsCellPossibleValues(Cell cell, Set<Cell> cells) {
         return cells.stream()
                 .filter(c -> c.getPossibleValues().containsAll(cell.getPossibleValues()))
                 .collect(Collectors.toSet());
+    }
+
+    private Set<Cell> getCellsThatHasCellPossibleValues(Cell cell, Set<Cell> cells) {
+        return cells.stream()
+                .filter(c -> haveSamePossibleValues(c.getPossibleValues(), cell.getPossibleValues()))
+                .collect(Collectors.toSet());
+    }
+
+    private boolean haveSamePossibleValues(Set<Integer> possibleValues, Set<Integer> possibleValues2) {
+        if (possibleValues.size() != possibleValues2.size()) return false;
+        return possibleValues.containsAll(possibleValues2);
     }
 
     private void iterateOverCells() {
