@@ -8,7 +8,7 @@ import java.io.File;
 
 public class Launcher {
 
-    private static final String LEVEL = "master";
+    private static final String LEVEL = "master-2";
 
     public static void main(String[] args) throws Exception {
         File sudokuFile = new File(Launcher.class.getClassLoader().getResource("sudoku/sudoku_"+LEVEL).toURI());

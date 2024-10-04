@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 public class SudokuSolver {
 
-    private static final int MAX_ITERATIONS = 5;
+    private static final int MAX_ITERATIONS = 10;
 
     private final Sudoku sudoku;
     private final List<Cell> sudokuScheme;
@@ -42,7 +42,9 @@ public class SudokuSolver {
         boolean solved = false;
         while (!solved && iterations < MAX_ITERATIONS) {
             iterateOverCells();
+            JSONHelper.addSudoku(sudoku);
             trioOfCandidatesStrategy();
+            JSONHelper.addSudoku(sudoku);
             solved = isSolved(sudoku.getSudoku());
             iterations++;
 
@@ -62,12 +64,16 @@ public class SudokuSolver {
             Set<Cell> rowCells = sudoku.getSudoku().stream()
                     .filter(c -> c.getCoordinate().getRow() == finalR)
                     .collect(Collectors.toSet());
-            applyTrioOfCandidates(rowCells);
+            if (rowCells.stream().allMatch(cell -> cell.getValue() != 0 || cell.getPossibleValues().size() > 1)) {
+                applyTrioOfCandidates(rowCells);
+            }
 
             Set<Cell> colCells = sudoku.getSudoku().stream()
                     .filter(cell -> cell.getCoordinate().getColumn() == finalR)
                     .collect(Collectors.toSet());
-            applyTrioOfCandidates(colCells);
+            if (colCells.stream().allMatch(cell -> cell.getValue() != 0 || cell.getPossibleValues().size() > 1)) {
+                applyTrioOfCandidates(colCells);
+            }
         }
     }
 
@@ -95,7 +101,9 @@ public class SudokuSolver {
 
                 if (cellsTrio.size() == possibleCellsNumbers.size()) {
                     for (int possibleCellNumber : possibleCellsNumbers) {
-                        cells.forEach(c -> c.removePossibleValue(possibleCellNumber));
+                        cells.stream()
+                                .filter(c -> !cellsTrio.contains(c))
+                                .forEach(c -> c.removePossibleValue(possibleCellNumber));
                     }
                 }
             }
