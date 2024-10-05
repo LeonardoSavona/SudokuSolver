@@ -79,6 +79,12 @@ public class SudokuSolver {
             applyTrioOfCandidates(getNotEmptyRowCells(r));
             applyTrioOfCandidates(getNotEmptyColumnCells(r));
         }
+
+        int sq = (int) Math.sqrt(sudoku.getSize());
+        for (Cell cell : sudoku.getSudoku()) {
+            if (cell.getCoordinate().getRow() % sq == 0 && cell.getCoordinate().getColumn() % sq ==0)
+                applyTrioOfCandidates(getNotEmptySquareCells(cell));
+        }
     }
 
     private void applyCoupleOfCandidates(Set<Cell> cells) {
@@ -197,6 +203,7 @@ public class SudokuSolver {
         for (Cell cell : sudokuScheme) {
             if (cell.getValue() == 0) {
                 searchNumberForCell(cell);
+                JSONHelper.addSudoku(sudoku);
             }
         }
     }
@@ -216,9 +223,13 @@ public class SudokuSolver {
         cell.getPossibleValues().removeIf(n -> !rawMissingNumbers.contains(n));
         if (isNumberFound(cell)) return;
 
+        JSONHelper.addSudoku(sudoku);
+
         Set<Integer> colMissingNumbers = getMissingNumbersFromColumn(cell.getCoordinate().getColumn());
         cell.getPossibleValues().removeIf(n -> !colMissingNumbers.contains(n));
         if (isNumberFound(cell)) return;
+
+        JSONHelper.addSudoku(sudoku);
 
         Set<Integer> squareMissingNumbers = getMissingNumbersFromSquare(cell);
         cell.getPossibleValues().removeIf(n -> !squareMissingNumbers.contains(n));
@@ -232,6 +243,7 @@ public class SudokuSolver {
                     !isPresentInOtherColumnsPossibleValues(cell, possibleValue) ||
                     !isPresentInOtherSquaresPossibleValues(cell, possibleValue)) {
 
+                JSONHelper.addSudoku(sudoku);
                 cell.clearPossibleValues();
                 cell.addPossibleValue(possibleValue);
                 break;
@@ -279,8 +291,11 @@ public class SudokuSolver {
     }
 
     private void clearOtherCellsPossibleValues(Cell cell) {
+        JSONHelper.addSudoku(sudoku);
         clearOtherRowCellsPossibleValues(cell);
+        JSONHelper.addSudoku(sudoku);
         clearOtherColumnCellsPossibleValues(cell);
+        JSONHelper.addSudoku(sudoku);
         clearOtherSquareCellsPossibleValues(cell);
     }
 
