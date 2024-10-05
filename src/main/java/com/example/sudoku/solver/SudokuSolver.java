@@ -3,11 +3,8 @@ package com.example.sudoku.solver;
 import com.example.sudoku.solver.entity.*;
 import com.example.sudoku.solver.helper.ConsolePrinter;
 import com.example.sudoku.solver.helper.JSONHelper;
-import com.example.sudoku.solver.strategy.candidates.BasicStrategy;
-import com.example.sudoku.solver.strategy.candidates.CoupleOfCandidatesStrategy;
+import com.example.sudoku.solver.strategy.candidates.*;
 import com.example.sudoku.solver.strategy.SquaresStrategy;
-import com.example.sudoku.solver.strategy.candidates.PossibleValuesStrategy;
-import com.example.sudoku.solver.strategy.candidates.TrioOfCandidatesStrategy;
 
 import java.util.*;
 
@@ -20,6 +17,7 @@ public class SudokuSolver {
     private final CoupleOfCandidatesStrategy coupleOfCandidatesStrategy;
     private final SquaresStrategy squaresStrategy;
     private final TrioOfCandidatesStrategy trioOfCandidatesStrategy;
+    private final HiddenCoupleOfCandidatesStrategy hiddenCoupleOfCandidatesStrategy;
 
     public SudokuSolver(Sudoku sudoku){
         this.sudoku = sudoku;
@@ -28,6 +26,7 @@ public class SudokuSolver {
         this.squaresStrategy = new SquaresStrategy(sudoku);
         this.coupleOfCandidatesStrategy = new CoupleOfCandidatesStrategy(sudoku);
         this.trioOfCandidatesStrategy = new TrioOfCandidatesStrategy(sudoku);
+        this.hiddenCoupleOfCandidatesStrategy = new HiddenCoupleOfCandidatesStrategy(sudoku);
     }
 
     public Sudoku solve() {
@@ -57,6 +56,9 @@ public class SudokuSolver {
             JSONHelper.addSudoku(sudoku);
 
             coupleOfCandidatesStrategy.apply();
+            JSONHelper.addSudoku(sudoku);
+
+            hiddenCoupleOfCandidatesStrategy.apply();
             JSONHelper.addSudoku(sudoku);
 
             solved = isCompleted(sudoku.getSudoku());
