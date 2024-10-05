@@ -1,10 +1,9 @@
-package com.example.sudoku.solver.strategy.candidates;
+package com.example.sudoku.solver.strategy.cellbased;
 
 import com.example.sudoku.solver.entity.Cell;
 import com.example.sudoku.solver.entity.Sudoku;
 import com.example.sudoku.solver.entity.square.Square;
 import com.example.sudoku.solver.helper.Helper;
-import com.example.sudoku.solver.strategy.Strategy;
 
 import java.util.Set;
 import java.util.stream.Collectors;

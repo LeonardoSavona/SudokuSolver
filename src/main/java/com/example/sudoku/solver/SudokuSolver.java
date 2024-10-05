@@ -3,6 +3,8 @@ package com.example.sudoku.solver;
 import com.example.sudoku.solver.entity.*;
 import com.example.sudoku.solver.helper.ConsolePrinter;
 import com.example.sudoku.solver.helper.JSONHelper;
+import com.example.sudoku.solver.strategy.cellbased.BasicStrategy;
+import com.example.sudoku.solver.strategy.cellbased.PossibleValuesStrategy;
 import com.example.sudoku.solver.strategy.candidates.*;
 import com.example.sudoku.solver.strategy.SquaresStrategy;
 

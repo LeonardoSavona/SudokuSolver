@@ -1,4 +1,4 @@
-package com.example.sudoku.solver.strategy.candidates;
+package com.example.sudoku.solver.strategy.cellbased;
 
 import com.example.sudoku.solver.entity.Cell;
 import com.example.sudoku.solver.entity.Coordinate;

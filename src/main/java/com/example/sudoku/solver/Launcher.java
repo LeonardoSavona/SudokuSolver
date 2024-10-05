@@ -35,8 +35,8 @@ public class Launcher {
             "extreme-2",
             "world_hardest"
     };
-    private static final String LEVEL = "extreme-2";
-    private static final boolean DO_ALL_LEVELS = true;
+    private static final String LEVEL = "world_hardest";
+    private static final boolean DO_ALL_LEVELS = false;
 
     public static void main(String[] args) throws Exception {
         if (DO_ALL_LEVELS) {
