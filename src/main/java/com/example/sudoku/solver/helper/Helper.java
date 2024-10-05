@@ -1,9 +1,14 @@
 package com.example.sudoku.solver.helper;
 
-import com.example.sudoku.solver.entity.*;
+import com.example.sudoku.solver.entity.Cell;
+import com.example.sudoku.solver.entity.Coordinate;
+import com.example.sudoku.solver.entity.Sudoku;
 import com.example.sudoku.solver.entity.square.Square;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Helper {

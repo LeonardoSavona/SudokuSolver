@@ -16,9 +16,7 @@ public class PossibleValuesStrategy extends CellBasedStrategy {
 
     @Override
     public void apply() {
-        // per ogni possibleValue controllare se è l'unico presente nella riga,
-        // colonna o quadrato, se è l'unico, allora settarlo come unico possible value e lanciare isNumberFound()
-        for (int possibleValue : cell.getPossibleValues()) {
+       for (int possibleValue : cell.getPossibleValues()) {
             if (!isPresentInOtherRowsPossibleValues(cell, possibleValue) ||
                     !isPresentInOtherColumnsPossibleValues(cell, possibleValue) ||
                     !isPresentInOtherSquaresPossibleValues(cell, possibleValue)) {

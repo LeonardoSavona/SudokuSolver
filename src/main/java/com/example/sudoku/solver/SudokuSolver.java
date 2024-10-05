@@ -1,14 +1,17 @@
 package com.example.sudoku.solver;
 
-import com.example.sudoku.solver.entity.*;
+import com.example.sudoku.solver.entity.Cell;
+import com.example.sudoku.solver.entity.Sudoku;
 import com.example.sudoku.solver.helper.ConsolePrinter;
 import com.example.sudoku.solver.helper.JSONHelper;
+import com.example.sudoku.solver.strategy.SquaresStrategy;
+import com.example.sudoku.solver.strategy.candidates.CoupleOfCandidatesStrategy;
+import com.example.sudoku.solver.strategy.candidates.HiddenCoupleOfCandidatesStrategy;
+import com.example.sudoku.solver.strategy.candidates.TrioOfCandidatesStrategy;
 import com.example.sudoku.solver.strategy.cellbased.BasicStrategy;
 import com.example.sudoku.solver.strategy.cellbased.PossibleValuesStrategy;
-import com.example.sudoku.solver.strategy.candidates.*;
-import com.example.sudoku.solver.strategy.SquaresStrategy;
 
-import java.util.*;
+import java.util.List;
 
 public class SudokuSolver {
 

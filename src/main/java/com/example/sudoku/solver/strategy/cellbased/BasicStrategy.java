@@ -28,7 +28,6 @@ public class BasicStrategy extends CellBasedStrategy {
             return;
         }
 
-        // Controllo rispetto ai numeri già inseriti
         Set<Integer> rawMissingNumbers = getMissingNumbersFromRow(cell.getCoordinate().getRow());
         if (cell.getPossibleValues().isEmpty())
             cell.setPossibleValues(rawMissingNumbers);

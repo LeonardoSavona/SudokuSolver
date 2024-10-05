@@ -2,7 +2,6 @@ package com.example.sudoku.solver.strategy.candidates;
 
 import com.example.sudoku.solver.entity.Cell;
 import com.example.sudoku.solver.entity.Sudoku;
-import com.example.sudoku.solver.strategy.candidates.CandidatesStrategy;
 
 import java.util.HashMap;
 import java.util.HashSet;
