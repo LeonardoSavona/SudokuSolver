@@ -10,10 +10,6 @@ public class Cell {
     private int value;
     private Set<Integer> possibleValues = new HashSet<>();
 
-    public Cell(Coordinate coordinate) {
-        this.coordinate = coordinate;
-    }
-
     public Cell(Coordinate coordinate, int value) {
         this.coordinate = coordinate;
         this.value = value;
@@ -49,6 +45,19 @@ public class Cell {
 
     public void setValue(Integer value) {
         this.value = value;
+    }
+
+    public boolean isNumberFound() {
+        if (getPossibleValues().size() == 1) {
+            setValue((Integer) getPossibleValues().toArray()[0]);
+            clearPossibleValues();
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isEmpty() {
+        return getValue() == 0 && getPossibleValues().isEmpty();
     }
 
     @Override

@@ -1,6 +1,8 @@
 package com.example.sudoku.solver.entity;
 
+import com.example.sudoku.solver.entity.square.Square;
 import com.example.sudoku.solver.helper.ConsolePrinter;
+import com.example.sudoku.solver.helper.Helper;
 
 import java.io.*;
 import java.util.*;
@@ -8,15 +10,15 @@ import java.util.stream.Collectors;
 
 public class Sudoku {
 
-    private List<Cell> sudoku = new ArrayList<>();
+    private final List<Cell> sudoku = new ArrayList<>();
+    private final Set<Square> squares;
+    private final Map<Coordinate, Set<Coordinate>> coordinatesSquares;
     private int size;
 
     public Sudoku(File sudokuFile) throws Exception {
         loadSudoku(sudokuFile);
-    }
-
-    public Sudoku(List<Cell> sudoku) {
-        this.sudoku = sudoku;
+        coordinatesSquares = Helper.getCoordinatesSquare(size);
+        squares = Helper.getSquares(this, coordinatesSquares);
     }
 
     private void loadSudoku(File sudokuFile) throws Exception {
@@ -55,6 +57,14 @@ public class Sudoku {
 
     public List<Cell> getSudoku() {
         return sudoku;
+    }
+
+    public Set<Square> getSquares() {
+        return squares;
+    }
+
+    public Map<Coordinate, Set<Coordinate>> getCoordinatesSquares() {
+        return coordinatesSquares;
     }
 
     public Cell getCellByCoordinate(Coordinate coordinate) {

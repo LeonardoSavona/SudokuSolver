@@ -1,12 +1,14 @@
-package com.example.sudoku.solver.entity;
+package com.example.sudoku.solver.entity.square;
+
+import com.example.sudoku.solver.entity.Cell;
 
 import java.util.*;
 
 public class Square {
 
-    private final List<SquareColumn> columns;
-    private final List<SquareRow> rows;
-    private Set<Cell> cells = new HashSet<>();
+    private final Set<SquareColumn> columns;
+    private final Set<SquareRow> rows;
+    private final Set<Cell> cells;
 
     public Square(Set<Cell> cells) {
         this.cells = cells;
@@ -14,29 +16,29 @@ public class Square {
         this.rows = extractRow();
     }
 
-    private List<SquareColumn> extractColumns() {
+    private Set<SquareColumn> extractColumns() {
         Map<Integer, SquareColumn> columnMap = new HashMap<>();
         cells.forEach(c -> {
             columnMap.computeIfAbsent(c.getCoordinate().getColumn(), k -> new SquareColumn(c.getCoordinate().getColumn()))
                     .addCell(c);
         });
-        return new ArrayList<>(columnMap.values());
+        return new HashSet<>(columnMap.values());
     }
 
-    private List<SquareRow> extractRow() {
+    private Set<SquareRow> extractRow() {
         Map<Integer, SquareRow> rowMap = new HashMap<>();
         cells.forEach(c -> {
             rowMap.computeIfAbsent(c.getCoordinate().getRow(), k -> new SquareRow(c.getCoordinate().getRow()))
                     .addCell(c);
         });
-        return new ArrayList<>(rowMap.values());
+        return new HashSet<>(rowMap.values());
     }
 
-    public List<SquareColumn> getColumns() {
+    public Set<SquareColumn> getColumns() {
         return columns;
     }
 
-    public List<SquareRow> getRows() {
+    public Set<SquareRow> getRows() {
         return rows;
     }
 

@@ -1,19 +1,16 @@
-package com.example.sudoku.solver.entity;
+package com.example.sudoku.solver.entity.square;
+
+import com.example.sudoku.solver.entity.Cell;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class SquareColumn {
+public abstract class SquareEntity {
 
-    private final int index;
-    private List<Cell> cells = new ArrayList<>();
+    protected final int index;
+    protected Set<Cell> cells = new HashSet<>();
 
-    public SquareColumn(int index) {
-        this.index = index;
-    }
-
-    public SquareColumn(List<Cell> cells, int index) {
-        this.cells = cells;
+    public SquareEntity(int index) {
         this.index = index;
     }
 
@@ -21,7 +18,7 @@ public class SquareColumn {
         return index;
     }
 
-    public List<Cell> getCells() {
+    public Set<Cell> getCells() {
         return cells;
     }
 
@@ -52,17 +49,10 @@ public class SquareColumn {
     }
 
     @Override
-    public String toString() {
-        return "Column" + cells;
-    }
+    public abstract String toString();
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        SquareColumn column = (SquareColumn) o;
-        return index == column.index && cells.equals(column.cells);
-    }
+    public abstract boolean equals(Object o);
 
     @Override
     public int hashCode() {

@@ -29,8 +29,7 @@ public class JSONHelper {
     }
 
     public static void addSudoku(Sudoku sudoku) {
-        if (iterations % 2 == 0)
-            ITERATIONS.add(getSudokuAsJSONObject(sudoku));
+        ITERATIONS.add(getSudokuAsJSONObject(sudoku));
         iterations++;
     }
 

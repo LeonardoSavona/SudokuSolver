@@ -1,6 +1,7 @@
 package com.example.sudoku.solver.helper;
 
 import com.example.sudoku.solver.entity.*;
+import com.example.sudoku.solver.entity.square.Square;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -64,10 +65,48 @@ public class Helper {
         return squares;
     }
 
-    public static List<Integer> getRepeatedNumbersFromList(List<Integer> list) {
-        return list.stream()
-                .filter(n -> Collections.frequency(list, n) > 1)
-                .distinct()
-                .collect(Collectors.toList());
+    public static void clearOtherCellsPossibleValues(Cell cell, Sudoku sudoku) {
+        clearOtherRowCellsPossibleValues(cell, sudoku);
+        clearOtherColumnCellsPossibleValues(cell, sudoku);
+        clearOtherSquareCellsPossibleValues(cell, sudoku);
+    }
+
+    private static void clearOtherRowCellsPossibleValues(Cell cell, Sudoku sudoku) {
+        sudoku.getSudoku().forEach(c -> {
+            if (c.getCoordinate().getRow() == cell.getCoordinate().getRow() && !c.getPossibleValues().isEmpty()){
+                c.removePossibleValue(cell.getValue());
+                if (c.isNumberFound()) {
+                    Helper.clearOtherCellsPossibleValues(c, sudoku);
+                }
+            }
+        });
+    }
+
+    private static void clearOtherColumnCellsPossibleValues(Cell cell, Sudoku sudoku) {
+        sudoku.getSudoku().forEach(c -> {
+            if (c.getCoordinate().getColumn() == cell.getCoordinate().getColumn() && !c.getPossibleValues().isEmpty()){
+                c.removePossibleValue(cell.getValue());
+                if (c.isNumberFound()) {
+                    Helper.clearOtherCellsPossibleValues(c, sudoku);
+                }
+            }
+        });
+    }
+
+    private static void clearOtherSquareCellsPossibleValues(Cell cell, Sudoku sudoku) {
+        Set<Coordinate> coordinates = sudoku.getCoordinatesSquares().get(cell.getCoordinate());
+        for (Coordinate coordinate : coordinates) {
+            Cell cell1 = sudoku.getCellByCoordinate(coordinate);
+            if (!cell1.getPossibleValues().isEmpty()) {
+                cell1.removePossibleValue(cell.getValue());
+                if (cell1.isNumberFound()) {
+                    Helper.clearOtherCellsPossibleValues(cell1, sudoku);
+                }
+            }
+        }
+    }
+
+    public static Square getSquareFromCell(Sudoku sudoku, Cell cell) {
+        return sudoku.getSquares().stream().filter(s -> s.getCells().contains(cell)).findFirst().get();
     }
 }
