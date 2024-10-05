@@ -1,9 +1,6 @@
 package com.example.sudoku.solver;
 
-import com.example.sudoku.solver.entity.Cell;
-import com.example.sudoku.solver.entity.Coordinate;
-import com.example.sudoku.solver.entity.Square;
-import com.example.sudoku.solver.entity.Sudoku;
+import com.example.sudoku.solver.entity.*;
 import com.example.sudoku.solver.helper.ConsolePrinter;
 import com.example.sudoku.solver.helper.Helper;
 import com.example.sudoku.solver.helper.JSONHelper;
@@ -43,6 +40,7 @@ public class SudokuSolver {
         while (!solved && iterations < MAX_ITERATIONS) {
             iterateOverCells();
             JSONHelper.addSudoku(sudoku);
+            squaresStrategy();
             trioOfCandidatesStrategy();
             JSONHelper.addSudoku(sudoku);
             coupleOfCandidatesStrategy();
@@ -58,6 +56,76 @@ public class SudokuSolver {
             System.out.println("Solved after "+iterations+" iterations");
 
         return sudoku;
+    }
+
+    private void squaresStrategy() {
+        for (Square square : squares) {
+
+            Map<Integer, SquareRow> numbersPresentInOnlyOneRow = getPossibleValuesPresentInOnlyOneRow(square.getRows());
+            for (Map.Entry<Integer, SquareRow> entry : numbersPresentInOnlyOneRow.entrySet()) {
+                sudokuScheme.forEach(c -> {
+                    if (c.getCoordinate().getRow() == entry.getValue().getIndex() &&
+                            !entry.getValue().getCells().contains(c) &&
+                            !c.getPossibleValues().isEmpty()){
+
+                        c.removePossibleValue(entry.getKey());
+                        isNumberFound(c);
+                    }
+                });
+            }
+
+            Map<Integer, SquareColumn> numbersPresentInOnlyOneColumn = getPossibleValuesPresentInOnlyOneColumn(square.getColumns());
+            for (Map.Entry<Integer, SquareColumn> entry : numbersPresentInOnlyOneColumn.entrySet()) {
+                sudokuScheme.forEach(c -> {
+                    if (c.getCoordinate().getColumn() == entry.getValue().getIndex() &&
+                            !entry.getValue().getCells().contains(c) &&
+                            !c.getPossibleValues().isEmpty()){
+
+                        c.removePossibleValue(entry.getKey());
+                        isNumberFound(c);
+                    }
+                });
+            }
+
+        }
+    }
+
+    private Map<Integer, SquareColumn> getPossibleValuesPresentInOnlyOneColumn(List<SquareColumn> columns) {
+        Map<Integer, SquareColumn> numbersPresentInOnlyOneColumn = new HashMap<>();
+        for (SquareColumn column : columns) {
+            Set<Integer> numbersPresentInEveryCell = new HashSet<>(column.getPossibleValuesPresentInEveryCells());
+            for (int i : numbersPresentInEveryCell) {
+                if (!isPresentInOtherColumns(columns.stream().filter(c -> !c.equals(column)).collect(Collectors.toSet()), i)) {
+                    numbersPresentInOnlyOneColumn.put(i, column);
+                } else {
+                    numbersPresentInOnlyOneColumn.remove(i);
+                }
+            }
+        }
+        return numbersPresentInOnlyOneColumn;
+    }
+
+    private Map<Integer, SquareRow> getPossibleValuesPresentInOnlyOneRow(List<SquareRow> rows) {
+        Map<Integer, SquareRow> numbersPresentInOnlyOneRow = new HashMap<>();
+        for (SquareRow row : rows) {
+            Set<Integer> numbersPresentInEveryCell = new HashSet<>(row.getPossibleValuesPresentInEveryCells());
+            for (int i : numbersPresentInEveryCell) {
+                if (!isPresentInOtherRows(rows.stream().filter(c -> !c.equals(row)).collect(Collectors.toSet()), i)) {
+                    numbersPresentInOnlyOneRow.put(i, row);
+                } else {
+                    numbersPresentInOnlyOneRow.remove(i);
+                }
+            }
+        }
+        return numbersPresentInOnlyOneRow;
+    }
+
+    private boolean isPresentInOtherColumns(Set<SquareColumn> columns, int i) {
+        return columns.stream().anyMatch(r -> r.getPossibleValues().contains(i));
+    }
+
+    private boolean isPresentInOtherRows(Set<SquareRow> rows, int i) {
+        return rows.stream().anyMatch(r -> r.getPossibleValues().contains(i));
     }
 
     private void coupleOfCandidatesStrategy() {
@@ -258,26 +326,31 @@ public class SudokuSolver {
 
     private boolean isPresentInOtherSquaresPossibleValues(Cell cell, int possibleValue) {
         Square square = getSquareFromCell(cell);
-        return square.getCells().stream()
-                .anyMatch(c -> c.getValue() == 0 && (c.getPossibleValues().isEmpty() || c.getPossibleValues().contains(possibleValue)));
+        return isPresentInCellsPossibleValues(square.getCells().stream()
+                .filter(c -> !c.equals(cell)).collect(Collectors.toSet()),
+                possibleValue);
     }
 
     private boolean isPresentInOtherRowsPossibleValues(Cell cell, int possibleValue) {
-        return sudokuScheme.stream()
+        Set<Cell> cells = sudokuScheme.stream()
                 .filter(c -> c.getCoordinate().getRow() == cell.getCoordinate().getRow() &&
                         c.getCoordinate().getColumn() != cell.getCoordinate().getColumn())
-                .collect(Collectors.toSet())
-                .stream()
-                .anyMatch(c -> c.getValue() == 0 && (c.getPossibleValues().isEmpty() || c.getPossibleValues().contains(possibleValue)));
+                .collect(Collectors.toSet());
+        return isPresentInCellsPossibleValues(cells, possibleValue);
     }
 
     private boolean isPresentInOtherColumnsPossibleValues(Cell cell, int possibleValue) {
-        return sudokuScheme.stream()
+        Set<Cell> cells = sudokuScheme.stream()
                 .filter(c -> c.getCoordinate().getColumn() == cell.getCoordinate().getColumn() &&
                         c.getCoordinate().getRow() != cell.getCoordinate().getRow())
-                .collect(Collectors.toSet())
-                .stream()
-                .anyMatch(c -> c.getValue() == 0 && (c.getPossibleValues().isEmpty() || c.getPossibleValues().contains(possibleValue)));
+                .collect(Collectors.toSet());
+        return isPresentInCellsPossibleValues(cells, possibleValue);
+    }
+
+    private boolean isPresentInCellsPossibleValues(Set<Cell> cells, int possibleValue) {
+        return cells.stream()
+                .anyMatch(c -> c.getValue() == 0 &&
+                        (c.getPossibleValues().isEmpty() || c.getPossibleValues().contains(possibleValue)));
     }
 
     private boolean isNumberFound(Cell cell) {

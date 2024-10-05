@@ -40,7 +40,7 @@ If identified, it means that the 2 possible values necessarily belong to those 2
 
 ![img_4.png](images/img_4.png)
 
-In this example we found two cells in column 4 with two values that coincide (1 and 6), so we can remove the values 1 and 6 from this column.
+In this example we found two cells in column 4 with 2 values that coincide (1 and 6), so we can remove the possible values 1 and 6 from the other cells in this column.
 
 ![img_5.png](images/img_5.png)
 

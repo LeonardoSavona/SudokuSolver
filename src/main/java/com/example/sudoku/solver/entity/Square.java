@@ -4,8 +4,8 @@ import java.util.*;
 
 public class Square {
 
-    private final List<Column> columns;
-    private final List<Row> rows;
+    private final List<SquareColumn> columns;
+    private final List<SquareRow> rows;
     private Set<Cell> cells = new HashSet<>();
 
     public Square(Set<Cell> cells) {
@@ -14,29 +14,29 @@ public class Square {
         this.rows = extractRow();
     }
 
-    private List<Column> extractColumns() {
-        Map<Integer, Column> columnMap = new HashMap<>();
+    private List<SquareColumn> extractColumns() {
+        Map<Integer, SquareColumn> columnMap = new HashMap<>();
         cells.forEach(c -> {
-            columnMap.computeIfAbsent(c.getCoordinate().getColumn(), k -> new Column(c.getCoordinate().getColumn()))
+            columnMap.computeIfAbsent(c.getCoordinate().getColumn(), k -> new SquareColumn(c.getCoordinate().getColumn()))
                     .addCell(c);
         });
         return new ArrayList<>(columnMap.values());
     }
 
-    private List<Row> extractRow() {
-        Map<Integer, Row> rowMap = new HashMap<>();
+    private List<SquareRow> extractRow() {
+        Map<Integer, SquareRow> rowMap = new HashMap<>();
         cells.forEach(c -> {
-            rowMap.computeIfAbsent(c.getCoordinate().getRow(), k -> new Row(c.getCoordinate().getRow()))
+            rowMap.computeIfAbsent(c.getCoordinate().getRow(), k -> new SquareRow(c.getCoordinate().getRow()))
                     .addCell(c);
         });
         return new ArrayList<>(rowMap.values());
     }
 
-    public List<Column> getColumns() {
+    public List<SquareColumn> getColumns() {
         return columns;
     }
 
-    public List<Row> getRows() {
+    public List<SquareRow> getRows() {
         return rows;
     }
 

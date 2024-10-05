@@ -1,6 +1,7 @@
 package com.example.sudoku.solver.entity;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 public class Cell {
@@ -56,5 +57,18 @@ public class Cell {
                 ", value=" + value +
                 ", possibleValues=" + possibleValues +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Cell cell = (Cell) o;
+        return coordinate.equals(cell.coordinate);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(coordinate);
     }
 }

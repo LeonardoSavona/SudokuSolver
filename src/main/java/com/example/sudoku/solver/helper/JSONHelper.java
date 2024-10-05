@@ -15,6 +15,7 @@ public class JSONHelper {
 
     private static final String FILE_PATH = "html/sudoku.json";
     private static final JSONArray ITERATIONS = new JSONArray();
+    private static int iterations = 0;
 
     public static void saveChronology() throws URISyntaxException {
         File sudokuFile = new File(
@@ -28,7 +29,9 @@ public class JSONHelper {
     }
 
     public static void addSudoku(Sudoku sudoku) {
-        ITERATIONS.add(getSudokuAsJSONObject(sudoku));
+        if (iterations % 2 == 0)
+            ITERATIONS.add(getSudokuAsJSONObject(sudoku));
+        iterations++;
     }
 
     public static JSONObject getSudokuAsJSONObject(Sudoku sudoku) {
