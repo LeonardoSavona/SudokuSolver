@@ -76,7 +76,6 @@ public class SquaresStrategy extends Strategy {
                     }
                 }
             }
-
         }
     }
 }
