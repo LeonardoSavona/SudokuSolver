@@ -44,7 +44,8 @@ public class Sudoku {
                     sudoku.add(
                             new Cell(
                                     new Coordinate(r, c),
-                                    tempSudoku.get(r).get(c)
+                                    tempSudoku.get(r).get(c),
+                                    this
                             )
                     );
                 }
