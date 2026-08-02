@@ -4,7 +4,10 @@ import com.example.sudoku.solver.entity.square.Square;
 import com.example.sudoku.solver.helper.ConsolePrinter;
 import com.example.sudoku.solver.helper.Helper;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -41,7 +44,8 @@ public class Sudoku {
                     sudoku.add(
                             new Cell(
                                     new Coordinate(r, c),
-                                    tempSudoku.get(r).get(c)
+                                    tempSudoku.get(r).get(c),
+                                    this
                             )
                     );
                 }

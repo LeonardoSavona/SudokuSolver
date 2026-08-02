@@ -3,7 +3,9 @@ package com.example.sudoku.solver.strategy.candidates;
 import com.example.sudoku.solver.entity.Cell;
 import com.example.sudoku.solver.entity.Sudoku;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class HiddenCoupleOfCandidatesStrategy extends CoupleOfCandidatesStrategy {

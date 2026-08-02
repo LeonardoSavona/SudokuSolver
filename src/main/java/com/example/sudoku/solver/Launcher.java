@@ -5,7 +5,6 @@ import com.example.sudoku.solver.helper.ConsolePrinter;
 import com.example.sudoku.solver.helper.JSONHelper;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -35,7 +34,7 @@ public class Launcher {
             "extreme-2",
             "world_hardest"
     };
-    private static final String LEVEL = "extreme-2";
+    private static final String LEVEL = "1";
     private static final boolean DO_ALL_LEVELS = true;
 
     public static void main(String[] args) throws Exception {

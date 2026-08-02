@@ -1,5 +1,7 @@
 package com.example.sudoku.solver.entity;
 
+import com.example.sudoku.solver.helper.Helper;
+
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -7,12 +9,14 @@ import java.util.Set;
 public class Cell {
 
     private final Coordinate coordinate;
+    private final Sudoku sudoku;
     private int value;
     private Set<Integer> possibleValues = new HashSet<>();
 
-    public Cell(Coordinate coordinate, int value) {
+    public Cell(Coordinate coordinate, int value, Sudoku sudoku) {
         this.coordinate = coordinate;
         this.value = value;
+        this.sudoku = sudoku;
     }
 
     public Coordinate getCoordinate() {
@@ -51,6 +55,7 @@ public class Cell {
         if (getPossibleValues().size() == 1) {
             setValue((Integer) getPossibleValues().toArray()[0]);
             clearPossibleValues();
+            Helper.clearOtherCellsPossibleValues(this, sudoku);
             return true;
         }
         return false;

@@ -1,4 +1,4 @@
-package com.example.sudoku.solver.strategy.candidates;
+package com.example.sudoku.solver.strategy.cellbased;
 
 import com.example.sudoku.solver.entity.Cell;
 import com.example.sudoku.solver.entity.Coordinate;
@@ -28,7 +28,6 @@ public class BasicStrategy extends CellBasedStrategy {
             return;
         }
 
-        // Controllo rispetto ai numeri già inseriti
         Set<Integer> rawMissingNumbers = getMissingNumbersFromRow(cell.getCoordinate().getRow());
         if (cell.getPossibleValues().isEmpty())
             cell.setPossibleValues(rawMissingNumbers);

@@ -1,10 +1,9 @@
-package com.example.sudoku.solver.strategy.candidates;
+package com.example.sudoku.solver.strategy.cellbased;
 
 import com.example.sudoku.solver.entity.Cell;
 import com.example.sudoku.solver.entity.Sudoku;
 import com.example.sudoku.solver.entity.square.Square;
 import com.example.sudoku.solver.helper.Helper;
-import com.example.sudoku.solver.strategy.Strategy;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -17,9 +16,7 @@ public class PossibleValuesStrategy extends CellBasedStrategy {
 
     @Override
     public void apply() {
-        // per ogni possibleValue controllare se è l'unico presente nella riga,
-        // colonna o quadrato, se è l'unico, allora settarlo come unico possible value e lanciare isNumberFound()
-        for (int possibleValue : cell.getPossibleValues()) {
+       for (int possibleValue : cell.getPossibleValues()) {
             if (!isPresentInOtherRowsPossibleValues(cell, possibleValue) ||
                     !isPresentInOtherColumnsPossibleValues(cell, possibleValue) ||
                     !isPresentInOtherSquaresPossibleValues(cell, possibleValue)) {
